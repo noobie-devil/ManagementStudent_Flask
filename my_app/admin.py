@@ -10,12 +10,6 @@ class MyAdminIndexView(AdminIndexView):
 		# 	# login_url = '%s?next=%s' % (url_for('login_page'), next_url)
 		# 	return redirect(url_for('login_page'))
 		return super(MyAdminIndexView,self).index()
-		
-
-
-		
-
-	
 
 user_form = {
 	'user_id' : fields.HiddenField(label='user_id'),
@@ -239,10 +233,10 @@ class TeacherView(UserView):
 		form = super(TeacherView, self).create_form()
 		max_id = db.session.query(func.max(Teacher.id)).scalar()
 		if max_id is None:
-			form.teacher_code.data = 'GV' + '{:0>5}'.format(1)
+			form.teacher_code.data = 'GV' + '{:0>4}'.format(1)
 		else:
 			if max_id != False:
-				form.teacher_code.data = 'GV' + '{:0>5}'.format(max_id+1)
+				form.teacher_code.data = 'GV' + '{:0>4}'.format(max_id+1)
 		
 		return form
 
