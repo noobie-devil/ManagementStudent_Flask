@@ -10,7 +10,7 @@ class MyTeacherIndexView(AdminIndexView):
 			return redirect(url_for('login_page'))
 		return super(MyTeacherIndexView,self).index()
 		
-class TeachingAssignmentView(MyBaseView):
+class TeachingAssignmentView_Teacher(MyBaseView):
 	column_list = ('subject','teacher.user.full_name', 'classInfo', 'semester', 'school_year')
 	# column_extra_row_actions = [
 	# 	EndpointLinkRowAction('ti ti-pencil', '.function'),
@@ -20,17 +20,13 @@ class TeachingAssignmentView(MyBaseView):
 	]
 	can_edit = False
 	can_delete = False
-
-	@expose('/function')
-	def copy_view(self):
-		pass
+	can_create = False
+	
 	def get_query(self):
 		if current_user.is_teacher:
 			teacher_id = Teacher.query.filter_by(user_id=current_user.user_id).first().id
 			return self.session.query(self.model).filter(self.model.teacher_id == teacher_id)
-		else:
-			return super(TeachingAssignmentView,self).get_query(self)
-
+		
 	list_template = 'teacher/list_class.html'
 	@expose('/')
 	def info_view(self):
@@ -100,6 +96,6 @@ class SubjectTranscriptView_Teacher(MyBaseView):
 
 
 teacher = Admin(app, name='Teacher', index_view=MyTeacherIndexView(url='/teacher', endpoint='_teacher'), base_template='master.html', template_mode='bootstrap4', url='/teacher', endpoint='_teacher')
-teacher.add_view(TeachingAssignmentView(TeachingAssignment, db.session, name='Danh sách lớp giảng dạy', url='/teacher/list-class',endpoint='teacher_assignment'))
+teacher.add_view(TeachingAssignmentView_Teacher(TeachingAssignment, db.session, name='Danh sách lớp giảng dạy', url='/teacher/list-class',endpoint='teacher_assignment'))
 teacher.add_view(StudentInClassView_Teacher(StudentInClass, db.session, name='Danh sách học sinh', url='/teacher/list-class', endpoint='class_details'))
 teacher.add_view(SubjectTranscriptView_Teacher(SubjectTranscript, db.session, name='Nhập điểm', url='/teacher/list-class', endpoint='score'))
