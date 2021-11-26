@@ -1,25 +1,4 @@
-from my_app import db,app
-from my_app.models import *
-from flask import Flask, render_template, redirect, url_for, flash, request, json
-from flask_admin import Admin
-from my_app import admin
-from flask_admin.contrib import sqla
-from flask_admin.contrib.sqla import ModelView
-from flask_login import login_user, logout_user, login_required, current_user
-from flask_admin import AdminIndexView, expose, BaseView
-from flask_admin.model.fields import InlineModelFormField, InlineFormField, InlineFieldList
-from wtforms.utils import unset_value
-from wtforms import form,fields
-from wtforms.validators import Length, EqualTo, Email, DataRequired, ValidationError
-from flask_wtf import FlaskForm
-from my_app.forms import *
-from flask_admin.helpers import (get_form_data, validate_form_on_submit, get_redirect_target, flash_errors)
-from flask_admin.model.helpers import get_mdict_item_or_list
-from flask_admin.contrib.sqla.filters import BaseSQLAFilter, FilterEqual, ChoiceTypeEqualFilter
-from flask_admin.model.template import EndpointLinkRowAction
-from datetime import datetime
-from sqlalchemy import func
-from flask_admin.model.template import TemplateLinkRowAction
+from my_app.common import *
 
 
 class MyAdminIndexView(AdminIndexView):
@@ -33,26 +12,9 @@ class MyAdminIndexView(AdminIndexView):
 		return super(MyAdminIndexView,self).index()
 		
 
-class MyStudentIndexView(AdminIndexView):
-	@expose('/')
-	def index(self):
-		if not current_user.is_authenticated or current_user.is_admin == False:
-			flash('Please log in first...', category='danger')
-			# next_url = request.url
-			# login_url = '%s?next=%s' % (url_for('login_page'), next_url)
-			return redirect(url_for('login_page'))
-		return super(MyStudentIndexView,self).index()
+
 		
-class MyTeacherIndexView(AdminIndexView):
-	@expose('/')
-	def index(self):
-		if not current_user.is_authenticated or current_user.is_teacher == False:
-			flash('Please log in first...', category='danger')
-			# next_url = request.url
-			# login_url = '%s?next=%s' % (url_for('login_page'), next_url)
-			return redirect(url_for('login_page'))
-		return super(MyTeacherIndexView,self).index()
-		
+
 	
 
 user_form = {
@@ -373,47 +335,6 @@ class PersonalInfoView(MyBaseView):
 			kwargs['more_info'] = more_info
 		return super(PersonalInfoView, self).render(template, **kwargs)
 
-class PersonalInfoView_Student(PersonalInfoView):
-	list_template = 'student/info.html'
-	@expose('/')
-	def info_view(self):
-		return super(PersonalInfoView_Student,self).list_view()
-
-	edit_template = 'student/edit_info.html'
-
-	@expose('/edit', methods=['GET','POST'])
-	def edit_view(self):
-		update_info_form = UpdateInfoForm()
-		if request.method == "POST":
-			more_info = MoreInfo.query.filter_by(user_id=current_user.user_id).first()
-			if more_info is not None:
-				more_info.email = update_info_form.u_email.data
-				more_info.phone = update_info_form.u_phone.data
-				more_info.current_residence = update_info_form.u_residence.data
-				more_info.note = update_info_form.note.data
-			else: 
-				more_info = MoreInfo(user_id=current_user.user_id,email=update_info_form.u_email.data,phone=update_info_form.u_phone.data,current_residence=update_info_form.u_residence.data,note=update_info_form.note.data,modified_at=datetime.now())
-				db.session.add(more_info)
-			student_to_update = Student.query.filter_by(user_id=current_user.user_id).first()
-			family_info = FamilyInfo.query.filter_by(student_id=student_to_update.id).first()
-			if family_info is not None:
-				family_info.full_name = update_info_form.contact_name.data
-				family_info.phone = update_info_form.contact_phone.data
-				family_info.current_residence = update_info_form.contact_residence.data
-			family_info = FamilyInfo(student_id=student_to_update.id, full_name=update_info_form.contact_name.data, phone=update_info_form.contact_phone.data, current_residence=update_info_form.contact_residence.data, modified_at=datetime.now())
-			db.session.add(family_info)
-
-			db.session.commit()
-			return redirect(url_for('student_info.info_view'))
-		more_info = MoreInfo.query.filter_by(user_id=current_user.user_id)
-		return self.render('student/edit_info.html', update_info_form=update_info_form, more_info=more_info)
-
-	def render(self, template, **kwargs):
-		student = Student.query.filter_by(user_id=current_user.user_id).first()
-		family_info = FamilyInfo.query.filter_by(student_id=student.id).first()
-		kwargs['student'] = student
-		kwargs['family_info'] = family_info
-		return super(PersonalInfoView_Student, self).render(template, **kwargs)
 # class PersonalInfoView(BaseView):
 # 	@expose('/')
 # 	def index(self):
@@ -472,93 +393,93 @@ class PersonalInfoView_Student(PersonalInfoView):
 
 # 		return super(PersonalInfoView, self).render(template, **kwargs)
 
-class TeachingAssignmentView(MyBaseView):
-	column_list = ('subject','teacher.user.full_name', 'classInfo', 'semester', 'school_year')
-	# column_extra_row_actions = [
-	# 	EndpointLinkRowAction('ti ti-pencil', '.function'),
-	# ]
-	column_extra_row_actions = [# Add a new action button
-		TemplateLinkRowAction("custom_row_actions.copy_row", "Show List Students"),
-	]
-	can_edit = False
-	can_delete = False
+# class TeachingAssignmentView(MyBaseView):
+# 	column_list = ('subject','teacher.user.full_name', 'classInfo', 'semester', 'school_year')
+# 	# column_extra_row_actions = [
+# 	# 	EndpointLinkRowAction('ti ti-pencil', '.function'),
+# 	# ]
+# 	column_extra_row_actions = [# Add a new action button
+# 		TemplateLinkRowAction("custom_row_actions.copy_row", "Show List Students"),
+# 	]
+# 	can_edit = False
+# 	can_delete = False
 
-	@expose('/function')
-	def copy_view(self):
-		pass
-	def get_query(self):
-		if current_user.is_teacher:
-			teacher_id = Teacher.query.filter_by(user_id=current_user.user_id).first().id
-			return self.session.query(self.model).filter(self.model.teacher_id == teacher_id)
-		else:
-			return super(TeachingAssignmentView,self).get_query(self)
+# 	@expose('/function')
+# 	def copy_view(self):
+# 		pass
+# 	def get_query(self):
+# 		if current_user.is_teacher:
+# 			teacher_id = Teacher.query.filter_by(user_id=current_user.user_id).first().id
+# 			return self.session.query(self.model).filter(self.model.teacher_id == teacher_id)
+# 		else:
+# 			return super(TeachingAssignmentView,self).get_query(self)
 
-	list_template = 'teacher/list_class.html'
-	@expose('/')
-	def info_view(self):
-		return super(TeachingAssignmentView,self).list_view()
-
-
-class StudentInClassView_Teacher(MyBaseView):
-	column_list = ('student','student.user.full_name', 'classInfo', 'classInfo.school_year')
-	can_delete = False
-	def get_query(self):
-		cid = False if request.args.get('cid') is None else request.args.get('cid')
-		if cid != False:
-			return self.session.query(self.model).filter(self.model.class_info_id == int(cid))
-		else:
-			return self.session.query(self.model)
-
-	list_template='teacher/list_students.html'
-	@expose('/class')
-	def list_students(self):
-		self._template_args['teaching_id'] = request.args.get('teaching-id')
-		self._template_args['cid'] = request.args.get('cid')		
-		return super(StudentInClassView_Teacher,self).index_view()
+# 	list_template = 'teacher/list_class.html'
+# 	@expose('/')
+# 	def info_view(self):
+# 		return super(TeachingAssignmentView,self).list_view()
 
 
-class SubjectTranscriptView_Teacher(MyBaseView):
-	column_list = ('student','transcript_details')
-	can_delete = False
-	list_template = 'teacher/edit_score.html'
+# class StudentInClassView_Teacher(MyBaseView):
+# 	column_list = ('student','student.user.full_name', 'classInfo', 'classInfo.school_year')
+# 	can_delete = False
+# 	def get_query(self):
+# 		cid = False if request.args.get('cid') is None else request.args.get('cid')
+# 		if cid != False:
+# 			return self.session.query(self.model).filter(self.model.class_info_id == int(cid))
+# 		else:
+# 			return self.session.query(self.model)
+
+# 	list_template='teacher/list_students.html'
+# 	@expose('/class')
+# 	def list_students(self):
+# 		self._template_args['teaching_id'] = request.args.get('teaching-id')
+# 		self._template_args['cid'] = request.args.get('cid')		
+# 		return super(StudentInClassView_Teacher,self).index_view()
 
 
-	def get_query(self):
-		action = False if request.args.get('action') is None else request.args.get('action')
-		teaching_id = False if request.args.get('teaching-id') is None else request.args.get('teaching-id')
-		if action != False and action == 'edit':
-			return self.session.query(self.model).filter(self.model.transcript_info_id == int(teaching_id))
-		else:
-			return self.session.query(self.model)
+# class SubjectTranscriptView_Teacher(MyBaseView):
+# 	column_list = ('student','transcript_details')
+# 	can_delete = False
+# 	list_template = 'teacher/edit_score.html'
 
-	def get_field(self,field):
-		if field.fieldtype == "float":
-			return fields.FloatField(field.label)
 
-	@expose('/class/score')
-	def score_view(self):
-		class DynamicForm(FlaskForm):pass
+# 	def get_query(self):
+# 		action = False if request.args.get('action') is None else request.args.get('action')
+# 		teaching_id = False if request.args.get('teaching-id') is None else request.args.get('teaching-id')
+# 		if action != False and action == 'edit':
+# 			return self.session.query(self.model).filter(self.model.transcript_info_id == int(teaching_id))
+# 		else:
+# 			return self.session.query(self.model)
 
-		# dform = self.models.Form.objects.get(name='scoreType')
-		score_type = [(type.id, type.score_name) for type in ScoreType.query.all()]
+# 	def get_field(self,field):
+# 		if field.fieldtype == "float":
+# 			return fields.FloatField(field.label)
 
-		for item in score_type:
-			setattr(DynamicForm, str(item[0]), fields.FloatField(item[1]))
-		form = DynamicForm()
-		# score_type = [{"score.label": type.score_name} for type in ScoreType.query.all()]
-		# form = TranscriptForm(transcripts=score_type)
-		action = False if request.args.get('action') is None else request.args.get('action')
-		if action != False and action == 'edit':
-			self._template_args['form'] = form
-			return super(SubjectTranscriptView_Teacher,self).index_view()		
+# 	@expose('/class/score')
+# 	def score_view(self):
+# 		class DynamicForm(FlaskForm):pass
 
-	# def render(self, template, **kwargs):
-	# 	if template == 'teacher/edit_score.html':
-	# 		kwargs['summary_data'] = [
-	# 			{'title': 'Page Total', 'name': None, 'cost': '1000'},
-	# 			{'title': 'Grand Total', 'name': None, 'cost': '2000'},
-	# 		]
-	# 	return super(SubjectTranscriptView_Teacher, self).render(template, **kwargs)
+# 		# dform = self.models.Form.objects.get(name='scoreType')
+# 		score_type = [(type.id, type.score_name) for type in ScoreType.query.all()]
+
+# 		for item in score_type:
+# 			setattr(DynamicForm, str(item[0]), fields.FloatField(item[1]))
+# 		form = DynamicForm()
+# 		# score_type = [{"score.label": type.score_name} for type in ScoreType.query.all()]
+# 		# form = TranscriptForm(transcripts=score_type)
+# 		action = False if request.args.get('action') is None else request.args.get('action')
+# 		if action != False and action == 'edit':
+# 			self._template_args['form'] = form
+# 			return super(SubjectTranscriptView_Teacher,self).index_view()		
+
+# 	# def render(self, template, **kwargs):
+# 	# 	if template == 'teacher/edit_score.html':
+# 	# 		kwargs['summary_data'] = [
+# 	# 			{'title': 'Page Total', 'name': None, 'cost': '1000'},
+# 	# 			{'title': 'Grand Total', 'name': None, 'cost': '2000'},
+# 	# 		]
+# 	# 	return super(SubjectTranscriptView_Teacher, self).render(template, **kwargs)
 
 
 
@@ -600,10 +521,5 @@ admin.add_view(MyBaseView(Gender, db.session, category="Thông tin chung", name=
 admin.add_view(MyBaseView(Nationality, db.session, category="Thông tin chung", name="Quốc tịch"))
 admin.add_view(MyBaseView(Ethnic, db.session, category="Thông tin chung", name="Dân tộc"))
 
-student = Admin(app, name='Student', index_view=MyStudentIndexView(url='/student', endpoint='_student'), base_template='master.html', template_mode='bootstrap4', url='/student', endpoint='_student')
-student.add_view(PersonalInfoView_Student(MoreInfo,db.session, name='Thông tin cá nhân', url='/student/info', endpoint='student_info'))
-
-teacher = Admin(app, name='Teacher', index_view=MyTeacherIndexView(url='/teacher', endpoint='_teacher'), base_template='master.html', template_mode='bootstrap4', url='/teacher', endpoint='_teacher')
-teacher.add_view(TeachingAssignmentView(TeachingAssignment, db.session, name='Danh sách lớp giảng dạy', url='/teacher/list-class',endpoint='teacher_assignment'))
-teacher.add_view(StudentInClassView_Teacher(StudentInClass, db.session, name='Danh sách học sinh', url='/teacher/list-class', endpoint='class_details'))
-teacher.add_view(SubjectTranscriptView_Teacher(SubjectTranscript, db.session, name='Nhập điểm', url='/teacher/list-class', endpoint='score'))
+from my_app.student import *
+from my_app.teacher import *
