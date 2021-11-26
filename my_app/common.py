@@ -20,3 +20,4 @@ from flask_admin.model.template import EndpointLinkRowAction
 from datetime import datetime
 from sqlalchemy import func
 from flask_admin.model.template import TemplateLinkRowAction
+from flask_admin.form.widgets import Select2Widget
