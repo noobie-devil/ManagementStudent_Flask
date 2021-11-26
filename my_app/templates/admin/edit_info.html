@@ -1,0 +1,93 @@
+{% extends 'admin/master.html' %}
+{% block body %}
+<div class="row">
+	<div class="col-sm-12">
+		<!-- Basic Form Inputs card start -->
+		<div class="card">
+			<div class="card-header">
+				<h5 class="text-primary">CẬP NHẬT THÔNG TIN LIÊN LẠC</h5>
+				<div class="card-header-right"><i
+					class="icofont icofont-spinner-alt-5"></i></div>
+
+					<div class="card-header-right">
+						<i class="icofont icofont-spinner-alt-5"></i>
+					</div>
+
+				</div>
+				<div class="card-block">
+					<h4 class="sub-title">Thông tin cá nhân</h4>
+					<form action="" method="POST">
+						{{update_info_form.hidden_tag()}}
+						<div class="form-group row">
+							{{ update_info_form.u_phone.label(class="col-sm-2 col-form-label")}}
+			
+							<!-- <label class="col-sm-2 col-form-label">Điện thoại</label> -->
+							<div class="col-sm-10">
+								{{ update_info_form.u_phone(class="form-control", value=more_info.phone)}}
+							</div>
+						</div>
+						<div class="form-group row">
+							{{ update_info_form.u_email.label(class="col-sm-2 col-form-label")}}
+							<div class="col-sm-10">
+								{{ update_info_form.u_email(class="form-control", value=more_info.email)}}
+							</div>
+						</div>
+						<div class="form-group row">
+							{{ update_info_form.u_residence.label(class="col-sm-2 col-form-label")}}
+							<div class="col-sm-10">
+								{{ update_info_form.u_residence(class="form-control", value=more_info.current_residence)}}
+							</div>
+						</div>
+						<div class="form-group row">
+							{{ update_info_form.note.label(class="col-sm-2 col-form-label")}}
+							<div class="col-sm-10">
+								{{ update_info_form.note(class="form-control", value=more_info.note)}}
+							</div>
+						</div>
+						{% if current_user.role.name == "Học Sinh" %}
+						<h4 class="sub-title">Thông tin liên lạc</h4>
+						<div class="form-group row">
+							{{ update_info_form.contact_name.label(class="col-sm-2 col-form-label")}}
+							<div class="col-sm-10">
+								{{ update_info_form.contact_name(class="form-control form-control-capitalize")}}
+							</div>
+						</div>
+						<div class="form-group row">
+							{{ update_info_form.contact_phone.label(class="col-sm-2 col-form-label")}}
+							<div class="col-sm-10">
+								{{ update_info_form.contact_phone(class="form-control")}}
+							</div>
+						</div>
+						<div class="form-group row">
+							{{ update_info_form.contact_residence.label(class="col-sm-2 col-form-label")}}
+							<div class="col-sm-10">
+								{{ update_info_form.contact_residence(class="form-control")}}
+							</div>
+						</div>	
+						{% endif %}
+						<div class="float-right">
+							{{ update_info_form.submit(class="btn btn-primary btn-outline-primary") }}
+							
+							<a class="btn btn-success btn-outline-success" href="{{url_for('admin_info.edit_view')}}">
+								Quay lại
+							</a>
+							
+
+						</div>
+					</form>
+					<div class="align-middle">
+						
+							
+					</div>
+				</div>
+			</div>
+
+		</div>
+		<!-- Page body end -->
+	</div>
+</div>
+<!-- Main-body end -->
+<div id="styleSelector">
+
+</div>
+{% endblock  %}

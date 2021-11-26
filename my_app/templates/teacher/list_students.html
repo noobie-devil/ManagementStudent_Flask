@@ -1,0 +1,11 @@
+{% extends 'admin/list.html' %}
+
+{% block body %}
+   {{ super() }}
+
+{% endblock %}
+{% block model_menu_bar_after_filters %}
+<li class="nav-item">
+  <a href="{{ get_url('score.score_view') }}?teaching-id={{ teaching_id }}&action=edit" title="{{ _gettext('Nhập điểm') }}" class="nav-link">{{ _gettext('Nhập điểm') }}</a>
+</li>
+{% endblock %}

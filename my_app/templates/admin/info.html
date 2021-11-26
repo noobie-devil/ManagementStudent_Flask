@@ -1,0 +1,142 @@
+{% extends 'admin/master.html' %}
+{% block body %}
+<div class="row">
+	<div class="col-sm-6">
+		<div class="card">
+			<div class="card-header bg-primary">
+				<h5 class="text-white">THÔNG TIN CÁ NHÂN</h5>
+				<div class="card-header-right">    <ul class="list-unstyled card-option">        <li><i class="icofont icofont-simple-left "></i></li>        <li><i class="icofont icofont-maximize full-card"></i></li>        <li><i class="icofont icofont-minus minimize-card"></i></li>     </ul></div>
+			</div>
+			<div class="card-block table-border-style">
+				<div class="table-responsive">
+					<table class="table">
+						
+						<tbody>
+							<tr>
+								<th scope="row"></th>
+								{% if current_user.role.name == "Giáo Viên" %}
+								<td><b>Mã giáo viên</b></td>
+								<td>: {{teacher_info.student_code}}</td>
+								{% else %}
+								<td><b>User ID</b></td>
+								<td>: {{current_user.user_id}}</td>
+								{% endif %}
+							</tr>
+							<tr>
+								<th scope="row"></th>
+								<td><b>Họ và tên</b></td>
+								<td>: {{current_user.user.full_name}}</td>
+
+							</tr>
+							<tr>
+								<th scope="row"></th>
+								<td><b>Ngày sinh</b></td>
+								<td>: {{current_user.user.birthdate}}</td>
+							</tr>
+							<tr>
+								<th scope="row"></th>
+								<td><b>Quê quán</b></td>
+								<td>: {{current_user.user.home_town}}</td>
+							</tr>
+							<tr>
+								<th scope="row"></th>
+								<td><b>Giới tính</b></td>
+								<td>: {{current_user.user.gender.gender_name}}</td>
+							</tr>
+							<tr>
+								<th scope="row"></th>
+								<td><b>Dân tộc</b></td>
+								<td>: {{current_user.user.ethnic.ethnic_name}}</td>
+							</tr>
+							<tr>
+								<th scope="row"></th>
+								<td><b>Địa chỉ thường trú</b></td>
+								<td>: {{current_user.user.permanent_address}}</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="col-sm-6">
+		<div class="card">
+			<div class="card-header bg-success">
+				<h5 class="text-white">THÔNG TIN LIÊN LẠC</h5>
+				<div class="card-header-right">    <ul class="list-unstyled card-option">        <li><i class="icofont icofont-simple-left "></i></li>        <li><i class="icofont icofont-maximize full-card"></i></li>        <li><i class="icofont icofont-minus minimize-card"></i></li>     </ul></div>
+			</div>
+			<div class="card-block table-border-style">
+				<div class="table-responsive">
+					<table class="table">
+						
+						<thead>
+							<tr>
+								<th class="text-danger">*</th>
+								<th class="text-danger">Thông tin liên lạc </th>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody>
+							{% if more_info is defined%}
+							<tr>
+								<th scope="row"></th>
+								<td><b>Điện thoại</b></td>
+								<td>: {{more_info.phone}}</td>
+							</tr>
+							<tr>
+								<th scope="row"></th>
+								<td><b>Email</b></td>
+								<td>: {{more_info.email}}</td>
+							</tr>
+							<tr>
+								<th scope="row"></th>
+								<td><b>Địa chỉ</b></td>
+								<td>: {{more_info.current_residence}}</td>
+							</tr>
+							<tr>
+								<th scope="row"></th>
+								<td><b>Note</b></td>
+								<td>: {{more_info.note}}</td>
+							</tr>
+							{% else %}
+							<tr>
+								<th scope="row"></th>
+								<td><b>Điện thoại</b></td>
+								<td>: </td>
+							</tr>
+							<tr>
+								<th scope="row"></th>
+								<td><b>Email</b></td>
+								<td>: </td>
+							</tr>
+							<tr>
+								<th scope="row"></th>
+								<td><b>Địa chỉ</b></td>
+								<td>: </td>
+							</tr>
+							<tr>
+								<th scope="row"></th>
+								<td><b>Note</b></td>
+								<td>: </td>
+							</tr>
+							{% endif %}
+						</tbody>
+					</table>
+
+				</div>
+			</div>
+		</div>
+		<a href="{{url_for('admin_info.edit_view')}}">
+		<button class="btn btn-primary btn-outline-primary">
+			<i class="icofont icofont-info-square"></i>
+			Cập nhật
+		</button></a>
+		<button class="btn btn-success btn-outline-success">
+			<i class="ti-lock"></i>
+			Đổi mật khẩu
+		</button>
+			
+	</div>
+</div>
+
+{% endblock  %}
