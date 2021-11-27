@@ -1,6 +1,7 @@
 from my_app import db, login_manager
 from datetime import datetime
 from my_app import bcrypt
+from flask_login.mixins import *
 from flask_login import UserMixin
 
 @login_manager.user_loader
@@ -143,6 +144,11 @@ class Account(db.Model, UserMixin):
 	def is_active(self):
 		return self.active
 	
+	def get_id(self):
+		try:
+			return text_type(self.user_id)
+		except AttributeError:
+			raise NotImplementedError('No `id` attribute - override `get_id`')
 	
 class User(db.Model):
 	id = db.Column(db.Integer(), primary_key=True, autoincrement=True)
