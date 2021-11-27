@@ -111,6 +111,12 @@ class CourseView(MyBaseView):
 		Course.time = form.start_year.data + '-' + form.end_year.data
 
 class UserView(MyBaseView):
+
+	def get_create_form(self):
+		form = super(UserView, self).get_create_form()
+		form.image = FileField("Hình ảnh", validators=[FileAllowed(['png','jpg','jpeg'], 'Invalid file type. Must be .png, .jpeg, .jpg')])
+		return form
+
 	def on_form_prefill(self,form, id):
 		user_model = self.session.query(self.model).filter(self.model.id == id).one()
 		form.user_id = user_model.user_id
