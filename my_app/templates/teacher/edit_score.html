@@ -10,7 +10,31 @@
 {% block head %}
     {{ super() }}
     {{ lib.form_css() }}
-{% endblock %}
+    <!-- CSS FOR DATATABLE -->
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.css" /> -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.3/css/dataTables.bootstrap4.min.css" />
+
+
+    <!-- ADD SCRIPT FOR DATATABLE -->
+
+    <!-- <script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script> -->
+    
+
+    <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.1/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet"> -->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.1/bootstrap3-editable/js/bootstrap-editable.js"></script> -->
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+    <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>  
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css" />
+     -->
+    <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.1/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.1/bootstrap3-editable/js/bootstrap-editable.js"></script> -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.1/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet">
+    <!-- <link rel="stylesheet" type="text/css" href="/static/bootstrap4-editable/css/bootstrap-editable.css"> -->
+
+    
+    {% endblock %}
 
 {% block body %}
     {% block model_menu_bar %}
@@ -194,8 +218,58 @@
 
     </tr>
     {% endfor %} -->
+    {% for item in score %}
+        {{item.score_name}}
+    {% endfor %}
 
-    <fieldset>
+    <div class="panel panel-default">
+        <div class="panel-heading"></div>
+        <div class="panel-body">
+            
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table id="score_data" class="table table-bordered table-striped model-list">
+            <thead>
+                <tr>
+                    <th class="column-header">
+                        Mã HS
+                    </th>        
+                    <th class="column-header">
+                        Họ tên
+                    </th>                         
+                    {% for item in score %}
+                    <th class="column-header">
+                        {{ item.score_name}}
+                    </th>     
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in employee %}
+                <tr>
+                    <td data-pk="{{row.id}}">{{row.id}}</td>
+                    <td data-name="name" class="name" data-type="text" data-pk="{{row.id}}">{{row.name}}</td>
+                    <td data-name="email" class="email" data-type="text" data-pk="{{row.id}}">{{row.email}}</td>
+                    <td data-name="phone" class="phone" data-type="text" data-pk="{{row.id}}">{{row.phone}}</td>
+                </tr>
+                {% endfor %}
+                {% for student in students %}
+                <tr>
+                    <td data-name="name" class="name" data-type="text">{{ student[0] }}</td>
+                    <td>{{ student[1] }}</td>
+
+                    <td data-name="name" class="name" data-type="text" data-pk="">name</td>
+                    <td data-name="email" class="email" data-type="text" data-pk="">email</td>
+                </tr>
+                {% endfor%}
+
+            </tbody>
+        </table>
+    </div>
+    <br />
+    <br />
+    <!-- <fieldset>
         {% for field in form %}
         {% if field.type in ['CSRFTokenField', 'HiddenField'] %}
         {{ field() }}
@@ -221,11 +295,65 @@
         </div>
         {% endif %}
         {% endfor %}
-    </fieldset>
+    </fieldset> -->
 {% endblock %}
 
 {% block tail %}
+
+    <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+
+    <script type="text/javascript" src="/static/bootstrap4-editable/js/bootstrap-editable.min.js"></script>
+
     {{ super() }}
+
+
+   <script type="text/javascript" language="javascript">
+        $(document).ready(function(){
+            $.fn.editable.defaults.mode = 'inline';
+            var dataTable = $('#score_data').DataTable();
+            $('#score_data').editable({
+                container:'body',
+                selector:'td.name',
+                url:'/updateemployee',
+                title:'Name',
+                type:'POST',
+                validate:function(value){
+                    if($.trim(value) == '')
+                    {
+                        return 'This field is required';
+                    }
+                }
+            });
+
+            $('#score_data').editable({
+                container:'body',
+                selector:'td.email',
+                url:'/updateemployee',
+                title:'Email',
+                type:'POST',
+                validate:function(value){
+                    if($.trim(value) == '')
+                    {
+                        return 'This field is required';
+                    }
+                }
+            });
+
+            $('#score_data').editable({
+                container:'body',
+                selector:'td.phone',
+                url:'/updateemployee',
+                title:'Phone',
+                type:'POST',
+                validate:function(value){
+                    if($.trim(value) == '')
+                    {
+                        return 'This field is required';
+                    }
+                }
+            });
+        }); 
+    </script>
 
     {% if filter_groups %}
       <div id="filter-groups-data" style="display:none;">{{ filter_groups|tojson|safe }}</div>

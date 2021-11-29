@@ -21,7 +21,13 @@ class TeachingAssignmentView_Teacher(MyBaseView):
 	can_edit = False
 	can_delete = False
 	can_create = False
-	
+
+# 	<!-- <form class="icon" method="POST" action="{{ get_url('.copy_view') }}">
+#   <input type="hidden" name="row_id" value="{{ get_pk_value(row) }}"/>
+#   <button type="submit" title="{{ _gettext('Copy record') }}">
+#     <span class="ti ti-pencil"></span>
+#   </button>
+# </form> -->
 	def get_query(self):
 		if current_user.is_teacher:
 			teacher_id = Teacher.query.filter_by(user_id=current_user.user_id).first().id
@@ -74,16 +80,28 @@ class SubjectTranscriptView_Teacher(MyBaseView):
 		class DynamicForm(FlaskForm):pass
 
 		# dform = self.models.Form.objects.get(name='scoreType')
+		
 		score_type = [(type.id, type.score_name) for type in ScoreType.query.all()]
+		class_info = TeachingAssignment.query.get(int(request.args.get('teaching-id'))).class_info
+		list_students = [(std.student.student_code, std.student.user.full_name) for std in class_info.student_In_Class]
+		# session.query(Table1.field1, Table1.field2)\
+		# .outerjoin(Table2)
+		# .outerjoin(Table2, Table1.id == Table2.table_id)\ # use if you do not have relationship defined
+		# .filter(Table2.tbl2_id == None)
+		score = self.session.query(ScoreType).all()
+		# for item in score_type:
+		# 	setattr(DynamicForm, str(item[0]), fields.FloatField(item[1]))
 
-		for item in score_type:
-			setattr(DynamicForm, str(item[0]), fields.FloatField(item[1]))
-		form = DynamicForm()
-		# score_type = [{"score.label": type.score_name} for type in ScoreType.query.all()]
-		# form = TranscriptForm(transcripts=score_type)
+		form = TranscriptForm(transcripts=score_type)
+
+		# form = DynamicForm()
+		score_type = [{"score.label": type.score_name} for type in ScoreType.query.all()]
+		form = TranscriptForm(transcripts=score_type)
 		action = False if request.args.get('action') is None else request.args.get('action')
 		if action != False and action == 'edit':
+			self._template_args['students'] = list_students
 			self._template_args['form'] = form
+			self._template_args['score'] = score
 			return super(SubjectTranscriptView_Teacher,self).index_view()		
 
 	# def render(self, template, **kwargs):

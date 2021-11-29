@@ -6,10 +6,13 @@ from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 from datetime import timedelta
 import cloudinary
+import cloudinary.uploader
 
 app = Flask(__name__)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:123456789@localhost/StudentManagementDB?charset=utf8mb4"
+# app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://ngvantruong:A!123456@ngvantruong.mysql.pythonanywhere-services.com/ngvantruong$ManagementStudent_db?charset=utf8mb4"
+
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///market.db'
 app.config['PERMANENT_SESSION_LIFETIME'] =  timedelta(minutes=120)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
