@@ -1,16 +1,34 @@
+from flask_admin import BaseView
 from my_app.admin import *
+
 
 class MyStudentIndexView(AdminIndexView):
 	@expose('/')
 	def index(self):
-		if not current_user.is_authenticated or current_user.is_admin == False:
+		if not current_user.is_authenticated or current_user.is_student() == False:
 			flash('Please log in first...', category='danger')
 			# next_url = request.url
 			# login_url = '%s?next=%s' % (url_for('login_page'), next_url)
 			return redirect(url_for('login_page'))
+		users = User.query.filter_by(id=current_user.user_id).first()
+		self._template_args["info"] = users
 		return super(MyStudentIndexView,self).index()
+	# def is_accessible(self):
+	# 	return current_user.is_student
 
-class PersonalInfoView_Student(PersonalInfoView):
+	# def inaccessible_callback(self, name, **kwargs):
+	# 	flash('Yêu cầu truy cập không khả dụng!! Hãy đăng nhập', category='danger')
+	# 	return redirect(url_for('login_page'))
+
+class MyBaseStudentView(MyBaseView):
+	def is_accessible(self):
+		return current_user.is_student()
+
+	def inaccessible_callback(self, name, **kwargs):
+		flash('Yêu cầu truy cập không khả dụng!! Hãy đăng nhập', category='danger')
+		return redirect(url_for('login_page'))
+
+class PersonalInfoView_Student(MyBaseStudentView):
 	list_template = 'student/info.html'
 	@expose('/')
 	def info_view(self):
@@ -52,5 +70,29 @@ class PersonalInfoView_Student(PersonalInfoView):
 		kwargs['family_info'] = family_info
 		return super(PersonalInfoView_Student, self).render(template, **kwargs)
 
+class ConfirmView_Student(BaseView):
+	@expose('/')
+	def index(self):
+		users = User.query.filter_by(id=current_user.user_id).first()
+		ethnics = Ethnic.query.filter_by(id=users.ethnic_id).first()
+		national = Nationality.query.filter_by(id=users.nationality_id).first()
+		getUrlImageAvatar = users.image_id
+		self._template_args["student_info"] = users
+		self._template_args["ethnics"] = ethnics
+		self._template_args["national"] = national
+		return self.render('student/confirm.html')
+
+
+class SubmitConfirmView_Student(BaseView):
+	@expose('/', methods=["POST"])
+	def index(self):
+		users = Account.query.filter_by(user_id=current_user.user_id).update(dict(active=1))
+		db.session.commit()
+		flash(f'Đăng nhập thành công !!!', category='success')
+		return redirect(url_for('_student.index'))
+
+
 student = Admin(app, name='Student', index_view=MyStudentIndexView(url='/student', endpoint='_student'), base_template='master.html', template_mode='bootstrap4', url='/student', endpoint='_student')
 student.add_view(PersonalInfoView_Student(MoreInfo,db.session, name='Thông tin cá nhân', url='/student/info', endpoint='student_info'))
+student.add_view(ConfirmView_Student(name="confirm", url='/student/confirm', endpoint='_confirmStudent'))
+student.add_view(SubmitConfirmView_Student(name="submitConfirm", url='/student/confirm/submit', endpoint='_submitConfirmStudent'))

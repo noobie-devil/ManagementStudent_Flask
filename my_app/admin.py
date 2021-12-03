@@ -1,5 +1,5 @@
 from my_app.common import *
-
+from flask import Markup
 
 class MyAdminIndexView(AdminIndexView):
 	@expose('/')
@@ -21,6 +21,7 @@ user_form = {
 	'ethnic' : fields.SelectField("Dân tộc", choices=Ethnic.query.all(), validators=[DataRequired()]),
 	'nationality' : fields.SelectField("Quốc tịch", choices=Nationality.query.all(), validators=[DataRequired()]),
 	# 'note' : fields.TextAreaField(validators=[Length(max=200)]),
+	'image': FileField("Hình ảnh", validators=[FileAllowed(['png','jpg','jpeg'], 'Invalid file type. Must be .png, .jpeg, .jpg')])
 	}
 
 def create_user(form, role):
@@ -117,6 +118,21 @@ class UserView(MyBaseView):
 		form.image = FileField("Hình ảnh", validators=[FileAllowed(['png','jpg','jpeg'], 'Invalid file type. Must be .png, .jpeg, .jpg')])
 		return form
 
+
+	def _image_formatter(view, context, model, name):
+		if model.user.image:
+			markupstring = "<img src='%s' alt='%s' width='100' heigh='100' >" % (model.user.image, model.user.image_id)
+			return Markup(markupstring)
+		else:
+			return ""
+
+	column_formatters = {
+		'user.image': _image_formatter
+	}
+	details_modal = True
+	can_view_details = True
+	column_searchable_list = ['user.full_name']
+
 	def on_form_prefill(self,form, id):
 		user_model = self.session.query(self.model).filter(self.model.id == id).one()
 		form.user_id = user_model.user_id
@@ -144,8 +160,17 @@ class UserView(MyBaseView):
 		return super(MyBaseView,self).update_model(form, model)
 
 	def on_model_change(self, form, model, is_created):
+		image = request.files['image']
+		if image.filename != '':
+			if is_created == False and model.user.image_id != None:
+				cloudinary.uploader.destroy(model.user.image_id, invalidate=True)
+			info = cloudinary.uploader.upload(image)
+			model.user.image = info['secure_url']
+			model.user.image_id = info['public_id']
+
 		if is_created and form.user_id:
 			model.user_id = form.user_id
+
 
 class AdminView(UserView):
 	form_excluded_columns = ('user', 'created_at')
@@ -172,7 +197,6 @@ class EducationalOfficeView(UserView):
 		db.session.commit()
 		form.user_id = user_to_create.id
 		return super(EducationalOfficeView,self).create_model(form)
-
 
 
 class StudentView(UserView):
@@ -325,7 +349,7 @@ class PersonalInfoView(MyBaseView):
 				db.session.add(more_info)
 			db.session.commit()
 
-			return redirect(url_for('admin_info.info_view'))
+			return redirect(url_for('.info_view'))
 		more_info = MoreInfo.query.filter_by(user_id=current_user.user_id)
 		return self.render('admin/edit_info.html', update_info_form=update_info_form, more_info=more_info)
 
@@ -395,11 +419,69 @@ class PersonalInfoView(MyBaseView):
 
 class TeachingAssignmentView(MyBaseView):
 	column_list = ('subject','teacher.user.full_name', 'classInfo', 'semester', 'school_year')
-	
-	create_template = 'admin/create_teaching_assignment.html'
+	form_excluded_columns = 'semester, transcript_info'
+	# create_template = 'admin/create_teaching_assignment.html'
+
+	def add_row(self, form,semester):
+		model = TeachingAssignment()
+		model.subject_id = form.subject.data.id
+		model.teacher_id = form.teacher.data.id
+		model.class_info_id = form.class_info.data.id
+		model.school_year_id = form.school_year.data.id
+		model.semester_id = semester.id
+		
+		return model
+
+	def create_model(self,form):
+
+		dicti = []
+		semesters = Semester.query.all()
+		for semester in semesters:
+			try:
+				model = self.add_row(form,semester)
+				self.session.add(model)
+				self.session.commit()
+				dicti.append(model)
+				# temp = model
+				# model.semester_id = semester.id
+				# dicti.append(temp)
+				# self.session.add(model)
+				# self._on_model_change(form, temp, True)
+			# self.session.commit()
+			except Exception as ex:
+				if not self.handle_view_exception(ex):
+					flash(gettext('Failed to create record. %(error)s', error=str(ex)), 'error')
+					log.exception('Failed to create record.')
+
+				self.session.rollback()
+
+				return False
+			else:
+				self.after_model_change(form, model, True)
+
+		return dicti
+
+	# def create_subject_transcript(self,model):
+	# 	model = SubjectTranscript()
+
+	def after_model_change(self, form, model, is_created):
+		if is_created:
+			for std in model.class_info.student_In_Class:
+				subj = SubjectTranscript()
+				subj.student_id = std.student_id
+				subj.transcript_info_id = model.id
+				self.session.add(subj)
+				self.session.commit()
 
 
-
+class StudentInClassView(MyBaseView):
+	def after_model_change(self, form, model, is_created):
+		for teaching_assigment in self.session.query(TeachingAssignment).filter_by(class_info_id = model.class_info_id):
+			subj = SubjectTranscript()
+			subj.student_id = model.student_id
+			subj.transcript_info_id = teaching_assigment.id
+			self.session.add(subj)
+			self.session.commit()
 
 admin = Admin(app, name='UTE', index_view=MyAdminIndexView(), base_template='master.html', template_mode='bootstrap4')
 
@@ -427,7 +509,7 @@ admin.add_view(MyBaseView(Subject, db.session, name="Quản lý môn học", men
 
 admin.add_view(MyBaseView(ScoreType, db.session, category="Quản lý điểm", name="Thông tin bảng điểm"))
 admin.add_view(MyBaseView(SubjectTranscript, db.session, category="Quản lý điểm", name="Điểm theo môn học"))
-admin.add_view(MyBaseView(StudentInClass, db.session, category="Quản lý điểm", name="Chỉnh sửa điểm học sinh"))
+admin.add_view(StudentInClassView(StudentInClass, db.session, category="Quản lý điểm", name="Chỉnh sửa điểm học sinh"))
 
 admin.add_view(MyBaseView(Semester, db.session, name="Học kỳ"))
 

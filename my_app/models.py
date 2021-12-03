@@ -169,6 +169,7 @@ class User(db.Model):
 	home_town = db.Column(db.String(length=50), nullable=False)
 	
 	more_info = db.relationship('MoreInfo', backref='user', lazy=False)
+	image_id = db.Column(db.String(length=200), nullable=True)
 	image = db.Column(db.String(length=200), nullable=True)
 	role_id = db.Column(db.Integer(), db.ForeignKey('role.id'), nullable=False)
 	role = db.relationship('Role', backref='user', lazy=False)
@@ -281,7 +282,7 @@ class DetailsTranscript(db.Model):
 	score_type_id = db.Column(db.Integer(), db.ForeignKey('scoreType.id'), primary_key=True)
 	score_type = db.relationship('ScoreType', backref='detailsTranscript', lazy=False)
 	
-	score = db.Column(db.Float(), nullable=False)
+	score = db.Column(db.Float(), nullable=True)
 	created_at = db.Column(db.DateTime, nullable=False, default=datetime.now())
 	modified_at = db.Column(db.DateTime, nullable=False, default=datetime.now())
 class Administrator(db.Model):
@@ -307,4 +308,6 @@ class InputScoreStatus(db.Model):
 	__tablename__ = 'inputScoreStatus'
 	time_id = db.Column(db.Integer(), db.ForeignKey('inputScoreTime.id'), primary_key=True)
 	status = db.Column(db.Boolean(), nullable=False)
+
+
 

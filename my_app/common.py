@@ -1,6 +1,6 @@
 from my_app import db,app
 from my_app.models import *
-from flask import Flask, render_template, redirect, url_for, flash, request, json
+from flask import Flask, render_template, redirect, url_for, flash, request, json, Response
 from flask_admin import Admin
 from my_app import admin
 from flask_admin.contrib import sqla
@@ -22,3 +22,5 @@ from sqlalchemy import func
 from flask_admin.model.template import TemplateLinkRowAction
 from flask_admin.form.widgets import Select2Widget
 from flask_wtf.file import FileField, FileAllowed
+import cloudinary
+import cloudinary.uploader

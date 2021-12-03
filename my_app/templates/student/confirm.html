@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Confirm Student</title>
+
+    <!-- Custom fonts for this template-->
+    <link href="/static/confirm/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link
+            href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+            rel="stylesheet">
+
+    <!-- Custom styles for this template-->
+    <link href="/static/confirm/css/sb-admin-2.min.css" rel="stylesheet">
+
+    <style>
+    </style>
+</head>
+
+<body class="bg-gradient-primary">
+
+<div class="container" style="height:auto;">
+    <form class="user" action="{{url_for('_submitConfirmStudent.index')}}" method="POST">
+        <div style="color:white; margin-top:45px; margin-bottom:-20px; font-size: 50px; text-align:center; font-size:300%">
+            <p>HIKI SCHOOL</p>
+        </div>
+        <!-- Outer Row -->
+        <div class="row justify-content-center">
+            <div class="col-xl-10 col-lg-12 col-md-9">
+                <div class="card o-hidden border-0 shadow-lg my-5">
+                    <div class="card-body p-0">
+                        <div class="form-group"></div>
+                        <div class="form-group">
+                            <img style="height: 200px;  position: relative; padding-top:0px; margin-bottom:-20px; margin-left:350px; border-radius: 50%;"
+                                 src="{{student_info.image_id}}" alt="Avatar">
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="p-5">
+
+                                    <div class="form-group">
+                                        <p style="position: relative; padding-top:7px; padding-bottom:20px; font-size:15px;"
+                                           class="form-control form-control-user">{{student_info.full_name}}</p>
+                                    </div>
+                                    <div class="form-group">
+                                        <p style="position: relative; padding-top:7px; padding-bottom:20px; font-size:15px;"
+                                           class="form-control form-control-user">{{student_info.birthdate}}</p>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="form-group row pb-5">
+                                            <div class="col-sm-4">
+                                                <div style="text-align:center"
+                                                     class="custom-control custom-checkbox small">
+                                                    {% if student_info.gender_id == 1%}
+                                                    <input type="checkbox" class="custom-control-input" checked="True"
+                                                           id="checkMale">
+                                                    {% else %}
+                                                    <input type="checkbox" class="custom-control-input"
+                                                           id="checkMale">
+                                                    {% endif %}
+
+                                                    <label class="custom-control-label" for="checkMale">Male</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <div class="custom-control custom-checkbox small">
+                                                    {% if student_info.gender_id == 2%}
+                                                    <input type="checkbox" class="custom-control-input" checked="true"
+                                                           id="checkFemale">
+                                                    {% else %}
+                                                    <input type="checkbox" class="custom-control-input"
+                                                           id="checkFemale">
+                                                    {% endif %}
+
+                                                    <label class="custom-control-label" for="checkFemale">Female</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <div style="text-align:left; "
+                                                     class="custom-control custom-checkbox small">
+                                                    {% if student_info.gender_id == 3%}
+                                                    <input type="checkbox" class="custom-control-input" checked="True"
+                                                           id="checkCustom">
+                                                    {% else %}
+                                                    <input type="checkbox" class="custom-control-input"
+                                                           id="checkCustom">
+                                                    {% endif %}
+
+                                                    <label class="custom-control-label" for="checkCustom">Custom</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <p style="position: relative; margin-top:-48px; padding-top:7px; padding-bottom:20px; font-size:15px;"
+                                           class="form-control form-control-user">{{ethnics.ethnic_name}}</p>
+                                    </div>
+                                    <div class="form-group">
+                                        <p style="position: relative; padding-top:7px; padding-bottom:20px; font-size:15px;"
+                                           class="form-control form-control-user">{{national.nationality_name}}</p>
+                                    </div>
+                                    <div class="form-group">
+                                        <p style="position: relative; padding-top:7px; padding-bottom:20px; font-size:15px;"
+                                           class="form-control form-control-user">{{student_info.permanent_address}}</p>
+                                    </div>
+                                    <div class="form-group">
+                                        <p style="position: relative; padding-top:7px; padding-bottom:20px; font-size:15px;"
+                                           class="form-control form-control-user">{{student_info.home_town}}</p>
+                                    </div>
+                                    <div class="form-group">
+                                        <p style="position: relative; padding-top:7px; padding-bottom:20px; font-size:15px;"
+                                           class="form-control form-control-user">Student</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6">
+                                <div class="p-5">
+                                    <div class="form-group">
+                                        <div class="form-control form-control-user"
+                                             style="position: relative; padding-top:7px; padding-bottom:20px; font-size:15px;">
+                                            <div class="form-group row pb-5">
+                                                <div class="col-sm-9">
+                                                    <p>Học bạ</p>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    <label>
+                                                        Upload
+                                                        <input id="file-input" multiple type="file"
+                                                               style="visibility: hidden;"/>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="preview"></div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="form-control form-control-user"
+                                             style="position: relative; padding-top:7px; padding-bottom:20px; font-size:15px;">
+                                            <div class="form-group row pb-5">
+                                                <div class="col-sm-9">
+                                                    <p>Bản sao giấy tốt nghiệp</p>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    <label>
+                                                        Upload
+                                                        <input id="file-input-graduate" multiple type="file"
+                                                               style="visibility: hidden;"/>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="preview-graduate"></div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="form-control form-control-user"
+                                             style="position: relative; padding-top:7px; padding-bottom:20px; font-size:15px;">
+                                            <div class="form-group row pb-5">
+                                                <div class="col-sm-9">
+                                                    <p>Bản sao học bạ (pdf)</p>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    <label>
+                                                        Upload
+                                                        <input style="margin-top:-10px; visibility: hidden; padding-top:-10px"
+                                                               type="file" id="file" multiple
+                                                               onchange="GetFileSizeNameAndType()"/>
+                                                    </label>
+                                                </div>
+                                                <div>
+                                                    <div style="margin-top:-35px;" id="fp"></div>
+                                                    <p>
+                                                    <div style="margin-top:-5px;" id="divTotalSize"></div>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="form-group row pb-5"
+                             style="margin-top:-30px; margin-bottom:-20px; padding-top:-10px">
+                            <div class="col-sm-6">
+                                <a style="margin-left:190px; width:200px;" href="/login" class="btn btn-google btn-user btn-block">Cancel</a>
+                            </div>
+                            <div class="col-sm-6">
+                                <input type="submit" value="Submit" class="btn btn-primary btn-user btn-block" style="margin-left:50px; width:200px;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </form>
+</div>
+
+<script>
+function previewImages() {
+    var preview = document.querySelector('#preview');
+
+    if (this.files) {
+        [].forEach.call(this.files, readAndPreview);
+    }
+
+    function readAndPreview(file) {
+        if (!/\.(jpe?g|png|gif)$/i.test(file.name)) {
+            return alert(file.name + " is not an image");
+    } // else...
+
+    var reader = new FileReader();
+
+    reader.addEventListener("load", function() {
+        var image = new Image();
+        image.height = 100;
+        image.title  = file.name;
+        image.src    = this.result;
+        preview.appendChild(image);
+    });
+
+    reader.readAsDataURL(file);
+    }
+}
+
+function previewImagesGraduate() {
+    var preview = document.querySelector('#preview-graduate');
+
+    if (this.files) {
+        [].forEach.call(this.files, readAndPreview);
+    }
+
+    function readAndPreview(file) {
+        if (!/\.(jpe?g|png|gif)$/i.test(file.name)) {
+            return alert(file.name + " is not an image");
+    } // else...
+
+    var reader = new FileReader();
+
+    reader.addEventListener("load", function() {
+        var image = new Image();
+        image.height = 100;
+        image.title  = file.name;
+        image.src    = this.result;
+        preview.appendChild(image);
+    });
+
+    reader.readAsDataURL(file);
+    }
+}
+
+function GetFileSizeNameAndType()
+        {
+        var fi = document.getElementById('file'); // GET THE FILE INPUT AS VARIABLE.
+
+        var totalFileSize = 0;
+
+        // VALIDATE OR CHECK IF ANY FILE IS SELECTED.
+        if (fi.files.length > 0)
+        {
+            // RUN A LOOP TO CHECK EACH SELECTED FILE.
+            for (var i = 0; i <= fi.files.length - 1; i++)
+            {
+                //ACCESS THE SIZE PROPERTY OF THE ITEM OBJECT IN FILES COLLECTION. IN THIS WAY ALSO GET OTHER PROPERTIES LIKE FILENAME AND FILETYPE
+                 var fsize = fi.files.item(i).size;
+                totalFileSize = totalFileSize + fsize;
+                document.getElementById('fp').innerHTML =
+                document.getElementById('fp').innerHTML
+                +
+                '<br /> ' + 'File Name is <b>' + fi.files.item(i).name
+                +
+                '</b> and Size is <b>' + Math.round((fsize / 1024)) //DEFAULT SIZE IS IN BYTES SO WE DIVIDING BY 1024 TO CONVERT IT IN KB
+            }
+        }
+
+    }
+
+document.querySelector('#file-input').addEventListener("change", previewImages);
+document.querySelector('#file-input-graduate').addEventListener("change", previewImagesGraduate);
+
+
+
+
+
+
+</script>
+
+<!-- Bootstrap core JavaScript-->
+<script src="/static/confirm/vendor/jquery/jquery.min.js"></script>
+<script src="/static/confirm/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+<!-- Core plugin JavaScript-->
+<script src="/static/confirm/vendor/jquery-easing/jquery.easing.min.js"></script>
+
+<!-- Custom scripts for all pages-->
+<script src="/static/confirm/js/sb-admin-2.min.js"></script>
+
+</body>
+
+</html>
