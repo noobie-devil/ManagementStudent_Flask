@@ -169,6 +169,7 @@ class User(db.Model):
 	home_town = db.Column(db.String(length=50), nullable=False)
 	
 	more_info = db.relationship('MoreInfo', backref='user', lazy=False)
+	image_id = db.Column(db.String(length=200), nullable=True)
 	image = db.Column(db.String(length=200), nullable=True)
 	role_id = db.Column(db.Integer(), db.ForeignKey('role.id'), nullable=False)
 	role = db.relationship('Role', backref='user', lazy=False)

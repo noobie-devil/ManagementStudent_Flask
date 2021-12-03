@@ -39,7 +39,8 @@ class UpdateInfoForm(FlaskForm):
 # 	'fullname': fields.StringField()
 # }
 class TranscriptEntryForm(FlaskForm):
+	# score_type = fields.StringField()
 	score = fields.FloatField()
 
 class TranscriptForm(FlaskForm):
-	transcripts = fields.FieldList(fields.FormField(TranscriptEntryForm), min_entries=1)
+	transcripts = fields.FieldList(fields.FormField(TranscriptEntryForm), min_entries=0)
