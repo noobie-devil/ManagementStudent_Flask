@@ -10,6 +10,9 @@ from my_app import admin
 @app.route('/', methods=('GET', 'POST'))
 @app.route('/login', methods=('GET', 'POST'))
 def login_page():
+	if current_user.is_authenticated:
+		logout_user()
+		flash("Phiên đăng nhập của bạn đã kết thúc!!!", category='info')
 	form = LoginForm()
 	if form.validate_on_submit():
 		attempted_user = Account.query.filter_by(username=form.username.data).first()

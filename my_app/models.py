@@ -282,7 +282,7 @@ class DetailsTranscript(db.Model):
 	score_type_id = db.Column(db.Integer(), db.ForeignKey('scoreType.id'), primary_key=True)
 	score_type = db.relationship('ScoreType', backref='detailsTranscript', lazy=False)
 	
-	score = db.Column(db.Float(), nullable=False)
+	score = db.Column(db.Float(), nullable=True)
 	created_at = db.Column(db.DateTime, nullable=False, default=datetime.now())
 	modified_at = db.Column(db.DateTime, nullable=False, default=datetime.now())
 class Administrator(db.Model):
@@ -308,4 +308,6 @@ class InputScoreStatus(db.Model):
 	__tablename__ = 'inputScoreStatus'
 	time_id = db.Column(db.Integer(), db.ForeignKey('inputScoreTime.id'), primary_key=True)
 	status = db.Column(db.Boolean(), nullable=False)
+
+
 

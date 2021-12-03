@@ -32,7 +32,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.1/bootstrap3-editable/js/bootstrap-editable.js"></script> -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.1/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet">
     <!-- <link rel="stylesheet" type="text/css" href="/static/bootstrap4-editable/css/bootstrap-editable.css"> -->
-
+    <style>
+        .editable-error-block{
+            position: absolute;
+            transform: translateY(100%);
+            color: red;
+        }
+    </style>
     
     {% endblock %}
 
@@ -40,10 +46,10 @@
     {% block model_menu_bar %}
     <ul class="nav nav-tabs">
       <li class="nav-item">
-        <a href="{{ return_url }}" class="nav-link">{{ _gettext('List') }}</a>
+        <a href="{{ url_for('class_details.list_students') }}?cid={{ class_info_id}}" class="nav-link">{{ _gettext('List') }}</a>
       </li>
       <li class="nav-item">
-        <a href="{{ get_url('.create_view', url=return_url) }}" title="{{ _gettext('Nhập điểm') }}" class="nav-link active">{{ _gettext('Nhập điểm') }}</a>
+        <a href="{{ url_for(request.endpoint) }}?teaching-id={{ teaching_id }}&action=edit" title="{{ _gettext('Nhập điểm') }}" class="nav-link active">{{ _gettext('Nhập điểm') }}</a>
       </li>
         {% if admin_view.can_create %}
         <li class="nav-item">
@@ -94,7 +100,7 @@
     {% endif %}
 
     {% block model_list_table %}
-    <div class="table-responsive">
+    <!-- <div class="table-responsive">
     <table class="table table-striped table-bordered table-hover model-list">
         <thead>
             <tr>
@@ -191,7 +197,7 @@
         </tr>
         {% endfor %}
     </table>
-    </div>
+    </div> -->
 
     
 
@@ -212,90 +218,69 @@
         {{ lib.add_modal_window() }}
     {%- endif -%}
 
-    <!-- {% for transcripts_entry_form in form.transcripts %}
-    <tr>
-        {{ lib.render_form_fields(transcripts_entry_form)}}
-
-    </tr>
-    {% endfor %} -->
-    {% for item in score %}
-        {{item.score_name}}
-    {% endfor %}
 
     <div class="panel panel-default">
-        <div class="panel-heading"></div>
-        <div class="panel-body">
-            
-        </div>
-    </div>
-    <div class="table-responsive">
-        <table id="score_data" class="table table-bordered table-striped model-list">
-            <thead>
-                <tr>
-                    <th class="column-header">
-                        Mã HS
-                    </th>        
-                    <th class="column-header">
-                        Họ tên
-                    </th>                         
-                    {% for item in score %}
-                    <th class="column-header">
-                        {{ item.score_name}}
-                    </th>     
-                    {% endfor %}
-                </tr>
-            </thead>
-            <tbody>
-                {% for row in employee %}
-                <tr>
-                    <td data-pk="{{row.id}}">{{row.id}}</td>
-                    <td data-name="name" class="name" data-type="text" data-pk="{{row.id}}">{{row.name}}</td>
-                    <td data-name="email" class="email" data-type="text" data-pk="{{row.id}}">{{row.email}}</td>
-                    <td data-name="phone" class="phone" data-type="text" data-pk="{{row.id}}">{{row.phone}}</td>
-                </tr>
-                {% endfor %}
-                {% for student in students %}
-                <tr>
-                    <td data-name="name" class="name" data-type="text">{{ student[0] }}</td>
-                    <td>{{ student[1] }}</td>
+        <div class="panel-heading">
+            <div class="row pt-3">
+                <div class="col-2">Học kỳ: <b class="text-primary">{{teaching_assignment.semester.display_name}}</b></div>
+                <div class="col-2">Môn: <b class="text-primary">{{ teaching_assignment.subject.subject_name }}</b></div>
+                <div class="col-2">GV: <b class="text-primary">{{ teaching_assignment.teacher.user.full_name }}</b></div>
+                <div class="col-2">Lớp: <b class="text-primary">{{ teaching_assignment.class_info.in_class }}</b></div>
+            </div>
+            <div class="row">
+                <div class="col-2">Năm Học: <b class="text-primary">{{teaching_assignment.school_year}}</b></div>
 
-                    <td data-name="name" class="name" data-type="text" data-pk="">name</td>
-                    <td data-name="email" class="email" data-type="text" data-pk="">email</td>
-                </tr>
-                {% endfor%}
-
-            </tbody>
-        </table>
-    </div>
-    <br />
-    <br />
-    <!-- <fieldset>
-        {% for field in form %}
-        {% if field.type in ['CSRFTokenField', 'HiddenField'] %}
-        {{ field() }}
-        {% else %}
-        <div class="form-group {% if field.errors %}error{% endif %}">
-            {{ field.label }}
-            <div class="input">
-                {% if field.name == "body" %}
-                {{ field(rows=10, cols=40) }}
-                {% else %}
-                {{ field() }}
-                {% endif %}
-                {% if field.errors or field.help_text %}
-                <span class="help-inline">
-                    {% if field.errors %}
-                    {{ field.errors|join(' ') }}
-                    {% else %}
-                    {{ field.help_text }}
-                    {% endif %}
-                </span>
-                {% endif %}
             </div>
         </div>
-        {% endif %}
-        {% endfor %}
-    </fieldset> -->
+        <div class="panel-body">
+        <div class="table-responsive">
+            <table id="score_data" class="table table-bordered table-striped model-list">
+                <thead>
+                    <tr>
+                        <th class="column-header">
+                            Mã HS
+                        </th>        
+                        <th class="column-header">
+                            Họ tên
+                        </th>                         
+                        {% for item in score %}
+                        <th class="column-header">
+                            {{ item.score_name}}
+                        </th>     
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in employee %}
+                    <tr>
+                        <td data-pk="{{row.id}}">{{row.id}}</td>
+                        <td data-name="name" class="name" data-type="text" data-pk="{{row.id}}">{{row.name}}</td>
+                        <td data-name="email" class="email" data-type="text" data-pk="{{row.id}}">{{row.email}}</td>
+                        <td data-name="phone" class="phone" data-type="text" data-pk="{{row.id}}">{{row.phone}}</td>
+                    </tr>
+                    {% endfor %}
+                    {% for student in lists %}
+                        <tr>
+                            <td data-name="name" class="name" data-type="text">{{ student['student'].student_code }}</td>
+                            <td>{{ student['student'].user.full_name }}</td>
+                            {% for s in student['score'] %}
+                                {% if 'score_value' in s and s['score_value'] is not none%}
+                                    <td data-name="score" data-score="{{ s['id'] }}" class="score editable-click" data-value="{{ s['score_value'] }}" data-type="text" data-pk="{{ student['id'] }}">{{ s['score_value'] }}</td>
+                                {% else %}
+                                    <td data-name="score" data-score="{{ s['id'] }}" data-student="{{ student['student_id'] }}" class="score editable-click editable-empty" data-value="" data-type="text" data-pk="{{ student['id'] }}">Trống</td>
+                                {% endif %}
+                            {% endfor %}
+                            
+                        </tr>
+                    {% endfor %}
+                
+                </tbody>
+            </table>
+        </div>  
+        </div>
+    </div>
+    <br />
+    <br />
 {% endblock %}
 
 {% block tail %}
@@ -310,48 +295,42 @@
    <script type="text/javascript" language="javascript">
         $(document).ready(function(){
             $.fn.editable.defaults.mode = 'inline';
-            var dataTable = $('#score_data').DataTable();
+            var dataTable = $('#score_data').DataTable({
+                "paging": false
+            });
             $('#score_data').editable({
                 container:'body',
-                selector:'td.name',
-                url:'/updateemployee',
+                selector:'td.score',
+                url: '/teacher/list-class/class/score/ajax-update',
                 title:'Name',
                 type:'POST',
-                validate:function(value){
-                    if($.trim(value) == '')
-                    {
-                        return 'This field is required';
+                savenochange: false,
+                emptytext: 'Trống', 
+                params: function(params) {
+                    // add additional params from data-attributes of trigger element
+                    var element = $(this)
+                    params.score = element.data('score');
+                    return params;
+
+                },
+                error: function(response, newValue) {
+                    if(response.status === 500) {
+                        return 'Service unavailable. Please try later.';
+                    } 
+                    else {
+                        return response.responseText;
                     }
+                    if(response.status === 400){
+                        $('.editable-error-block').html('' + response.responseJSON.msg + '');
+                        // return response.msg
+                    }
+                
+                },
+                success: function(response, newValue) {
+                    console.log(response.msg)
                 }
             });
 
-            $('#score_data').editable({
-                container:'body',
-                selector:'td.email',
-                url:'/updateemployee',
-                title:'Email',
-                type:'POST',
-                validate:function(value){
-                    if($.trim(value) == '')
-                    {
-                        return 'This field is required';
-                    }
-                }
-            });
-
-            $('#score_data').editable({
-                container:'body',
-                selector:'td.phone',
-                url:'/updateemployee',
-                title:'Phone',
-                type:'POST',
-                validate:function(value){
-                    if($.trim(value) == '')
-                    {
-                        return 'This field is required';
-                    }
-                }
-            });
         }); 
     </script>
 
