@@ -199,7 +199,6 @@ class EducationalOfficeView(UserView):
 		return super(EducationalOfficeView,self).create_model(form)
 
 
-
 class StudentView(UserView):
 	form_excluded_columns = ('user', 'created_at','family_info', 'familyInfo','studentInClass','subjectTranscript')
 	# column_list = ('user.image','student_code','user.full_name', 'user.gender', 'user.birthdate', 'user.home_town', 'user.ethnic', 'user.nationality')

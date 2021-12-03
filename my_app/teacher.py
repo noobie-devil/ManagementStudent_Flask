@@ -8,6 +8,8 @@ class MyTeacherIndexView(AdminIndexView):
 			# next_url = request.url
 			# login_url = '%s?next=%s' % (url_for('login_page'), next_url)
 			return redirect(url_for('login_page'))
+		users = User.query.filter_by(id=current_user.user_id).first()
+		self._template_args["info"] = users
 		return super(MyTeacherIndexView,self).index()
 	
 class MyBaseTeacherView(MyBaseView):

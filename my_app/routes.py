@@ -23,6 +23,8 @@ def login_page():
 				return redirect(url_for('admin.index'))
 			if attempted_user.is_student():
 				login_user(attempted_user)
+				if current_user.active == 0:
+					return redirect(url_for('_confirmStudent.index'))
 				flash(f'Đăng nhập thành công !!!', category='success')
 				return redirect(url_for('_student.index'))
 			if attempted_user.is_teacher():
@@ -33,6 +35,8 @@ def login_page():
 		else:
 			flash('Tên người dùng hoặc mật khẩu không đúng! Vui lòng thử lại', category='danger')
 	return render_template('login.html', form=form)
+
+
 
 @app.route('/logout')
 def logout():
