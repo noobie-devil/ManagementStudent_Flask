@@ -138,8 +138,8 @@
       {% if field.widget.input_type == 'checkbox' %}
         {% set _class = kwargs.setdefault('class', 'form-control-lg') %}
       {% elif field.widget.input_type == 'file' %}
-<!--         {% set _class = kwargs.setdefault('class', 'form-control-file') %}
- --><!--         <div class="container">
+        {% set _class = kwargs.setdefault('class', 'form-control-file') %}
+        <!-- <div class="container">
           <div class="panel">
             <div class="button_outer">
               <div class="btn_upload">
@@ -154,8 +154,8 @@
           <div class="uploaded_file_view" id="uploaded_view">
             <span class="file_remove">X</span>
           </div>
-        </div>
- -->      {% else %}
+        </div> -->
+      {% else %}
         {% set _class = kwargs.setdefault('class', 'form-control') %}
       {% endif %}
       {%- if direct_error %} {% set _ = kwargs.update({'class': kwargs['class'] ~ ' is-invalid'}) %} {% endif -%}
@@ -296,32 +296,7 @@
   <script src="{{ admin_static.url(filename='vendor/x-editable/js/bootstrap4-editable.min.js', v='1.5.1.1') }}"></script>
   {% endif %}
   <script src="{{ admin_static.url(filename='admin/js/form.js', v='1.0.1') }}"></script>
-  <script>
-    var btnUpload = $("#upload_file"),
-    btnOuter = $(".button_outer");
-    btnUpload.on("change", function(e){
-      var ext = btnUpload.val().split('.').pop().toLowerCase();
-      if($.inArray(ext, ['gif','png','jpg','jpeg']) == -1) {
-        $(".error_msg").text("Not an Image...");
-      } else {
-        $(".error_msg").text("");
-        btnOuter.addClass("file_uploading");
-        setTimeout(function(){
-          btnOuter.addClass("file_uploaded");
-        },3000);
-        var uploadedFile = URL.createObjectURL(e.target.files[0]);
-        setTimeout(function(){
-          $("#uploaded_view").append('<img src="'+uploadedFile+'" />').addClass("show");
-        },3500);
-      }
-    });
-    $(".file_remove").on("click", function(e){
-      $("#uploaded_view").removeClass("show");
-      $("#uploaded_view").find("img").remove();
-      btnOuter.removeClass("file_uploading");
-      btnOuter.removeClass("file_uploaded");
-    });
-  </script>
+  
 {% endmacro %}
 
 {% macro extra() %}

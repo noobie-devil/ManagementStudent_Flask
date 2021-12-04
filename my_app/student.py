@@ -3,14 +3,28 @@ from my_app.admin import *
 class MyStudentIndexView(AdminIndexView):
 	@expose('/')
 	def index(self):
-		if not current_user.is_authenticated or current_user.is_admin == False:
+		if not current_user.is_authenticated or current_user.is_student() == False:
 			flash('Please log in first...', category='danger')
 			# next_url = request.url
 			# login_url = '%s?next=%s' % (url_for('login_page'), next_url)
 			return redirect(url_for('login_page'))
 		return super(MyStudentIndexView,self).index()
+	# def is_accessible(self):
+	# 	return current_user.is_student
 
-class PersonalInfoView_Student(PersonalInfoView):
+	# def inaccessible_callback(self, name, **kwargs):
+	# 	flash('Yêu cầu truy cập không khả dụng!! Hãy đăng nhập', category='danger')
+	# 	return redirect(url_for('login_page'))
+
+class MyBaseStudentView(MyBaseView):
+	def is_accessible(self):
+		return current_user.is_student()
+
+	def inaccessible_callback(self, name, **kwargs):
+		flash('Yêu cầu truy cập không khả dụng!! Hãy đăng nhập', category='danger')
+		return redirect(url_for('login_page'))
+
+class PersonalInfoView_Student(MyBaseStudentView):
 	list_template = 'student/info.html'
 	@expose('/')
 	def info_view(self):
