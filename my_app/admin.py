@@ -92,7 +92,8 @@ class MyBaseView(ModelView):
 		'semester.semester_name': 'Học kỳ',
 		'student.user.full_name': 'Họ tên',
 		'classInfo.school_year' : 'Năm học',
-		'student' : 'Mã HS'
+		'student' : 'Mã HS',
+		'class_info': 'Lớp'
 
 	}
 	form_widget_args = {
@@ -164,13 +165,23 @@ class UserView(MyBaseView):
 		if image.filename != '':
 			if is_created == False and model.user.image_id != None:
 				cloudinary.uploader.destroy(model.user.image_id, invalidate=True)
-			info = cloudinary.uploader.upload(image)
-			model.user.image = info['secure_url']
-			model.user.image_id = info['public_id']
-
+				info = cloudinary.uploader.upload(image)
+				model.user.image = info['secure_url']
+				model.user.image_id = info['public_id']
+			
 		if is_created and form.user_id:
 			model.user_id = form.user_id
-
+			
+	def after_model_change(self, form, model, is_created):
+		if is_created:
+			user = User.query.filter_by(id=model.user_id).first()
+			info = cloudinary.uploader.upload(image)
+			user.image = info['secure_url']
+			user.image_id = info['public_id']
+			try:
+				self.session.commit()
+			except Exception as ex:
+				self.session.rollback()
 
 class AdminView(UserView):
 	form_excluded_columns = ('user', 'created_at')
@@ -418,7 +429,7 @@ class PersonalInfoView(MyBaseView):
 # 		return super(PersonalInfoView, self).render(template, **kwargs)
 
 class TeachingAssignmentView(MyBaseView):
-	column_list = ('subject','teacher.user.full_name', 'classInfo', 'semester', 'school_year')
+	column_list = ('subject','teacher.user.full_name', 'class_info', 'semester', 'school_year')
 	form_excluded_columns = 'semester, transcript_info'
 	# create_template = 'admin/create_teaching_assignment.html'
 
@@ -442,12 +453,7 @@ class TeachingAssignmentView(MyBaseView):
 				self.session.add(model)
 				self.session.commit()
 				dicti.append(model)
-				# temp = model
-				# model.semester_id = semester.id
-				# dicti.append(temp)
-				# self.session.add(model)
-				# self._on_model_change(form, temp, True)
-			# self.session.commit()
+				
 			except Exception as ex:
 				if not self.handle_view_exception(ex):
 					flash(gettext('Failed to create record. %(error)s', error=str(ex)), 'error')
@@ -460,6 +466,7 @@ class TeachingAssignmentView(MyBaseView):
 				self.after_model_change(form, model, True)
 
 		return dicti
+
 
 	# def create_subject_transcript(self,model):
 	# 	model = SubjectTranscript()
@@ -510,6 +517,8 @@ admin.add_view(MyBaseView(Subject, db.session, name="Quản lý môn học", men
 admin.add_view(MyBaseView(ScoreType, db.session, category="Quản lý điểm", name="Thông tin bảng điểm"))
 admin.add_view(MyBaseView(SubjectTranscript, db.session, category="Quản lý điểm", name="Điểm theo môn học"))
 admin.add_view(StudentInClassView(StudentInClass, db.session, category="Quản lý điểm", name="Chỉnh sửa điểm học sinh"))
+
+admin.add_view(MyBaseView(ResumeImageFields, db.session, name="Form hồ sơ nhập học"))
 
 admin.add_view(MyBaseView(Semester, db.session, name="Học kỳ"))
 

@@ -38,11 +38,16 @@ class TeachingAssignmentView_Teacher(MyBaseTeacherView):
 #     <span class="ti ti-pencil"></span>
 #   </button>
 # </form> -->
+
 	def get_query(self):
-		if current_user.is_teacher:
-			teacher_id = Teacher.query.filter_by(user_id=current_user.user_id).first().id
-			return self.session.query(self.model).filter(self.model.teacher_id == teacher_id)
-		
+		teacher_id = Teacher.query.filter_by(user_id=current_user.user_id).first().id
+		return self.session.query(self.model).join(Semester).join(SchoolYear).filter(self.model.teacher_id == teacher_id, Semester.active == True, self.model.semester_id == Semester.id, self.model.school_year_id == SchoolYear.id, SchoolYear.active == True)
+	
+
+	def get_count_query(self):
+		teacher_id = Teacher.query.filter_by(user_id=current_user.user_id).first().id
+		return self.session.query(func.count('*')).select_from(self.model).join(Semester).join(SchoolYear).filter(self.model.teacher_id == teacher_id, Semester.active == True, self.model.semester_id == Semester.id, self.model.school_year_id == SchoolYear.id, SchoolYear.active == True)
+
 	list_template = 'teacher/list_class.html'
 	@expose('/')
 	def info_view(self):
@@ -64,6 +69,9 @@ class StudentInClassView_Teacher(MyBaseTeacherView):
 			return self.session.query(self.model).filter(self.model.class_info_id == int(cid))
 		else:
 			return self.session.query(self.model)
+
+	def get_count_query(self):
+		return self.session.query(func.count('*')).select_from(self.model).filter(self.model.class_info_id == int(request.args.get('cid')))
 
 	list_template='teacher/list_students.html'
 	@expose('/class')
