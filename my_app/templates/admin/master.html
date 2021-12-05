@@ -163,17 +163,15 @@
                                 <ul class="show-notification profile-notification">
                                     <li>
                                         {% if current_user.is_admin() %}
-                                            <a href="{{ url_for('_changePasswordAdmin.index') }}"><i class="ti-settings"></i>Settings</a>
+                                            <a href="{{ url_for('_changePasswordAdmin.index') }}"><i class="ti-settings"></i>Đổi mật khẩu</a>
                                         {% endif %}
                                         {% if current_user.is_teacher() %}
-                                            <a href="{{ url_for('_changePasswordTeacher.index') }}"><i class="ti-settings"></i>Settings</a>
+                                            <a href="{{ url_for('_changePasswordTeacher.index') }}"><i class="ti-settings"></i>Đổi mật khẩu</a>
                                         {% endif %}
                                         {% if current_user.is_student() %}
-                                            <a href="{{ url_for('_changePasswordStudent.index') }}"><i class="ti-settings"></i>Settings</a>
+                                            <a href="{{ url_for('_changePasswordStudent.index') }}"><i class="ti-settings"></i>Đổi mật khẩu</a>
                                         {% endif %}
-                                        <a href="#!">
-                                            <i class="ti-settings"></i> Cài đặt
-                                        </a>
+                                        
                                     </li>
                                     <li>
                                         <a href="{{request.url + 'info'}}">
@@ -213,19 +211,16 @@
                                 <div class="main-menu-content">
                                     <ul>
                                         <li class="more-details">
-                                            <a href="#"><i class="ti-user"></i>View Profile</a>
                                             {% if current_user.is_admin() %}
-                                                <a href="{{ url_for('_changePasswordAdmin.index') }}"><i class="ti-settings"></i>Settings</a>
+                                                <a href="{{ url_for('_changePasswordAdmin.index') }}"><i class="ti-settings"></i>Đổi mật khẩu</a>
                                             {% endif %}
                                             {% if current_user.is_teacher() %}
-                                                <a href="{{ url_for('_changePasswordTeacher.index') }}"><i class="ti-settings"></i>Settings</a>
+                                                <a href="{{ url_for('_changePasswordTeacher.index') }}"><i class="ti-settings"></i>Đổi mật khẩu</a>
                                             {% endif %}
                                             {% if current_user.is_student() %}
-                                                <a href="{{ url_for('_changePasswordStudent.index') }}"><i class="ti-settings"></i>Settings</a>
+                                                <a href="{{ url_for('_changePasswordStudent.index') }}"><i class="ti-settings"></i>Đổi mật khẩu</a>
                                             {% endif %}
-                                            <a href="{{ url_for('logout') }}"><i class="ti-layout-sidebar-left"></i>Logout</a>
                                             <a href="{{request.url + 'info'}}"><i class="ti-user"></i>Thông tin cá nhân</a>
-                                            <a href="#!"><i class="ti-settings"></i>Settings</a>
                                             <a href="{{ url_for('logout') }}"><i class="ti-layout-sidebar-left"></i>Đăng xuất</a>
                                         </li>
                                     </ul>
