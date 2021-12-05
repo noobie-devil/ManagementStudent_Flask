@@ -4,7 +4,7 @@ from my_app.models import *
 from my_app.forms import LoginForm
 from my_app import db
 from flask_login import login_user, logout_user, login_required, current_user
-from my_app import admin
+from my_app import admin, teacher
 
 
 @app.route('/', methods=('GET', 'POST'))
@@ -31,6 +31,10 @@ def login_page():
 				login_user(attempted_user)
 				flash(f'Đăng nhập thành công !!!', category='success')
 				return redirect(url_for('_teacher.index'))
+			if attempted_user.is_edu_office():
+				login_user(attempted_user)
+				flash(f'Đăng nhập thành công !!!', category='success')
+				return redirect(url_for('_edu_office.index'))
 			session.permanent = True
 		else:
 			flash('Tên người dùng hoặc mật khẩu không đúng! Vui lòng thử lại', category='danger')
