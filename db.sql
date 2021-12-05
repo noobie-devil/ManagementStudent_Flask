@@ -43,7 +43,7 @@ CREATE TABLE `account` (
 
 LOCK TABLES `account` WRITE;
 /*!40000 ALTER TABLE `account` DISABLE KEYS */;
-INSERT INTO `account` VALUES (1,'GV00001','$2b$12$jw/LB1NqrqGSE/c74S74kuZ2VkvM1lpCt4TBsMQf7Tvze89kgxUXW',2,1,'2021-11-23 01:42:11'),(3,'GV00002','$2b$12$q4vxMht1igN7zH2AoJIR.OI.dW46wqmuYqEhAJrJf85nQvTT1OH9K',2,1,'2021-11-23 19:21:42'),(4,'HS00001','$2b$12$nR3zVoSXp150wWJgLncozeZUJxQdPR7ehLAeTjuooEAvPhHbYz.Oe',3,1,'2021-11-23 20:29:35'),(5,'HS00002','$2b$12$A.qeeBc4HzPonXg8n9oqRuz26Hnk04zLBgEpMDEGPQbBxiUqiTjwK',3,1,'2021-11-23 21:21:06'),(6,'HS00003','$2b$12$puFO7VYSJFh0pymSSukBUuhqexBZRYRcNyQETKKADM2MJTorV4ZdC',3,1,'2021-11-23 21:21:06');
+INSERT INTO `account` VALUES (1,'GV00001','$2b$12$jw/LB1NqrqGSE/c74S74kuZ2VkvM1lpCt4TBsMQf7Tvze89kgxUXW',2,1,'2021-11-23 01:42:11'),(3,'GV00002','$2b$12$q4vxMht1igN7zH2AoJIR.OI.dW46wqmuYqEhAJrJf85nQvTT1OH9K',2,1,'2021-11-23 19:21:42'),(4,'HS00001','$2b$12$J4q3CksLQOYAIGF/Q7NNvuM/QjwIJg2IRIeqFmkZcc.ZIYldXchVu',3,0,'2021-11-23 20:29:35'),(5,'HS00002','$2b$12$A.qeeBc4HzPonXg8n9oqRuz26Hnk04zLBgEpMDEGPQbBxiUqiTjwK',3,1,'2021-11-23 21:21:06'),(6,'HS00003','$2b$12$puFO7VYSJFh0pymSSukBUuhqexBZRYRcNyQETKKADM2MJTorV4ZdC',3,1,'2021-11-23 21:21:06'),(8,'HS00004','$2b$12$qTs1mguuQZfu66CYBhGgTuwziHVf/Ap.LIO/X3OspYTjo759wN9X.',3,1,'2021-11-30 08:56:02'),(10,'PGV0001','$2b$12$SDH2pzsZS3SdKIRI6OZune/01NRvuq.IXVXLD0qpT4gwxyCbJhOEi',4,1,'2021-12-04 20:45:01'),(21,'admin','$2b$12$z.fcUGWZm6uIqSELQ95ZLOb40RCJn5Rhb/gGKokGUpFVTNZYeFYgi',1,1,'2021-12-05 13:52:34'),(27,'PGV003','$2b$12$Nu4C9IyK.NkyRnC4d3fPBebdNvhTmnQjiS6w9UHq/oWyZJfE6MAPu',4,1,'2021-12-05 12:18:53');
 /*!40000 ALTER TABLE `account` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -61,7 +61,7 @@ CREATE TABLE `administrator` (
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `administrator_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -70,6 +70,7 @@ CREATE TABLE `administrator` (
 
 LOCK TABLES `administrator` WRITE;
 /*!40000 ALTER TABLE `administrator` DISABLE KEYS */;
+INSERT INTO `administrator` VALUES (2,21,'2021-12-05 11:10:53');
 /*!40000 ALTER TABLE `administrator` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -92,7 +93,7 @@ CREATE TABLE `alembic_version` (
 
 LOCK TABLES `alembic_version` WRITE;
 /*!40000 ALTER TABLE `alembic_version` DISABLE KEYS */;
-INSERT INTO `alembic_version` VALUES ('6e93b8f8c282');
+INSERT INTO `alembic_version` VALUES ('bdde44a96627');
 /*!40000 ALTER TABLE `alembic_version` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -199,7 +200,7 @@ DROP TABLE IF EXISTS `detailstranscript`;
 CREATE TABLE `detailstranscript` (
   `transcript_id` int(11) NOT NULL,
   `score_type_id` int(11) NOT NULL,
-  `score` float NOT NULL,
+  `score` float DEFAULT NULL,
   `created_at` datetime NOT NULL,
   `modified_at` datetime NOT NULL,
   PRIMARY KEY (`transcript_id`,`score_type_id`),
@@ -215,6 +216,7 @@ CREATE TABLE `detailstranscript` (
 
 LOCK TABLES `detailstranscript` WRITE;
 /*!40000 ALTER TABLE `detailstranscript` DISABLE KEYS */;
+INSERT INTO `detailstranscript` VALUES (14,1,5,'2021-12-04 22:13:59','2021-12-05 20:15:57'),(14,2,8,'2021-12-04 22:13:59','2021-12-05 01:30:03'),(14,3,10,'2021-12-05 01:34:12','2021-12-05 01:34:12'),(15,1,6,'2021-12-05 01:00:13','2021-12-05 01:04:20'),(15,2,9,'2021-12-05 01:29:53','2021-12-05 01:29:53'),(15,3,2,'2021-12-05 01:30:59','2021-12-05 01:32:07'),(16,1,7.85,'2021-12-05 01:14:14','2021-12-05 01:14:14'),(16,3,9,'2021-12-05 01:34:12','2021-12-05 01:34:12');
 /*!40000 ALTER TABLE `detailstranscript` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -232,7 +234,7 @@ CREATE TABLE `educationaloffice` (
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `educationaloffice_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -241,6 +243,7 @@ CREATE TABLE `educationaloffice` (
 
 LOCK TABLES `educationaloffice` WRITE;
 /*!40000 ALTER TABLE `educationaloffice` DISABLE KEYS */;
+INSERT INTO `educationaloffice` VALUES (1,10,'2021-12-04 20:45:01'),(2,27,'2021-12-05 12:18:53');
 /*!40000 ALTER TABLE `educationaloffice` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -286,7 +289,7 @@ CREATE TABLE `familyinfo` (
   PRIMARY KEY (`id`),
   KEY `student_id` (`student_id`),
   CONSTRAINT `familyinfo_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `student` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -295,6 +298,7 @@ CREATE TABLE `familyinfo` (
 
 LOCK TABLES `familyinfo` WRITE;
 /*!40000 ALTER TABLE `familyinfo` DISABLE KEYS */;
+INSERT INTO `familyinfo` VALUES (1,1,'','','','2021-12-01 14:28:05'),(2,1,'','','','2021-12-02 13:20:02'),(3,1,'','','','2021-12-02 14:23:35');
 /*!40000 ALTER TABLE `familyinfo` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -349,30 +353,6 @@ INSERT INTO `grade` VALUES (1,'Khối 10'),(2,'Khối 11'),(3,'Khối 12');
 UNLOCK TABLES;
 
 --
--- Table structure for table `inputscorestatus`
---
-
-DROP TABLE IF EXISTS `inputscorestatus`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
-CREATE TABLE `inputscorestatus` (
-  `time_id` int(11) NOT NULL,
-  `status` tinyint(1) NOT NULL,
-  PRIMARY KEY (`time_id`),
-  CONSTRAINT `inputscorestatus_ibfk_1` FOREIGN KEY (`time_id`) REFERENCES `inputscoretime` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `inputscorestatus`
---
-
-LOCK TABLES `inputscorestatus` WRITE;
-/*!40000 ALTER TABLE `inputscorestatus` DISABLE KEYS */;
-/*!40000 ALTER TABLE `inputscorestatus` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `inputscoretime`
 --
 
@@ -383,10 +363,11 @@ CREATE TABLE `inputscoretime` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `start_date` datetime NOT NULL,
   `end_date` datetime NOT NULL,
+  `status` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `end_date` (`end_date`),
   UNIQUE KEY `start_date` (`start_date`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -395,6 +376,7 @@ CREATE TABLE `inputscoretime` (
 
 LOCK TABLES `inputscoretime` WRITE;
 /*!40000 ALTER TABLE `inputscoretime` DISABLE KEYS */;
+INSERT INTO `inputscoretime` VALUES (1,'2021-12-05 20:13:00','2021-12-05 20:16:00',1);
 /*!40000 ALTER TABLE `inputscoretime` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -424,6 +406,7 @@ CREATE TABLE `moreinfo` (
 
 LOCK TABLES `moreinfo` WRITE;
 /*!40000 ALTER TABLE `moreinfo` DISABLE KEYS */;
+INSERT INTO `moreinfo` VALUES (1,'19110443@teacher.hcmute.edu.vn','123456666','','wibu chúa','2021-12-01 14:19:01'),(4,'19110042@student.hcmute.edu.vn','','','wibu chua','2021-12-01 14:28:05');
 /*!40000 ALTER TABLE `moreinfo` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -453,6 +436,95 @@ INSERT INTO `nationality` VALUES (1,'Việt Nam');
 UNLOCK TABLES;
 
 --
+-- Table structure for table `resume`
+--
+
+DROP TABLE IF EXISTS `resume`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+ SET character_set_client = utf8mb4 ;
+CREATE TABLE `resume` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) DEFAULT NULL,
+  `uploaded_at` datetime NOT NULL,
+  `modified_at` datetime DEFAULT NULL,
+  `submitted_at` datetime NOT NULL,
+  `confirm` tinyint(1) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `resume_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `resume`
+--
+
+LOCK TABLES `resume` WRITE;
+/*!40000 ALTER TABLE `resume` DISABLE KEYS */;
+INSERT INTO `resume` VALUES (1,4,'2021-12-04 19:59:38','2021-12-04 19:59:38','2021-12-04 19:59:38',0);
+/*!40000 ALTER TABLE `resume` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `resumeimagefields`
+--
+
+DROP TABLE IF EXISTS `resumeimagefields`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+ SET character_set_client = utf8mb4 ;
+CREATE TABLE `resumeimagefields` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `field_name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `role_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `field_name` (`field_name`),
+  KEY `role_id` (`role_id`),
+  CONSTRAINT `resumeimagefields_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `role` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `resumeimagefields`
+--
+
+LOCK TABLES `resumeimagefields` WRITE;
+/*!40000 ALTER TABLE `resumeimagefields` DISABLE KEYS */;
+INSERT INTO `resumeimagefields` VALUES (1,'Bản sao giấy khai sinh',3),(2,'Bản sao giấy tốt nghiệp tạm thời',3),(3,'Bản sao học bạ',3);
+/*!40000 ALTER TABLE `resumeimagefields` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `resumeimagestorage`
+--
+
+DROP TABLE IF EXISTS `resumeimagestorage`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+ SET character_set_client = utf8mb4 ;
+CREATE TABLE `resumeimagestorage` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `resume_id` int(11) DEFAULT NULL,
+  `field_id` int(11) DEFAULT NULL,
+  `image_path` varchar(200) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `image_public_id` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `field_id` (`field_id`),
+  KEY `resume_id` (`resume_id`),
+  CONSTRAINT `resumeimagestorage_ibfk_1` FOREIGN KEY (`field_id`) REFERENCES `resumeimagefields` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `resumeimagestorage_ibfk_2` FOREIGN KEY (`resume_id`) REFERENCES `resume` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `resumeimagestorage`
+--
+
+LOCK TABLES `resumeimagestorage` WRITE;
+/*!40000 ALTER TABLE `resumeimagestorage` DISABLE KEYS */;
+INSERT INTO `resumeimagestorage` VALUES (1,1,1,'https://res.cloudinary.com/dsqpeicna/image/upload/v1638622107/cvf2kc9ipnop70pfe9nh.jpg','cvf2kc9ipnop70pfe9nh'),(2,1,2,'https://res.cloudinary.com/dsqpeicna/image/upload/v1638622108/jcro4wzyiowfbgw4se8m.jpg','jcro4wzyiowfbgw4se8m'),(3,1,3,'https://res.cloudinary.com/dsqpeicna/image/upload/v1638622109/dlizsz4a3m0epn5yzrvb.jpg','dlizsz4a3m0epn5yzrvb');
+/*!40000 ALTER TABLE `resumeimagestorage` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `role`
 --
 
@@ -465,7 +537,7 @@ CREATE TABLE `role` (
   `created_at` datetime NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -474,7 +546,7 @@ CREATE TABLE `role` (
 
 LOCK TABLES `role` WRITE;
 /*!40000 ALTER TABLE `role` DISABLE KEYS */;
-INSERT INTO `role` VALUES (1,'Admin','2021-11-23 01:31:39'),(2,'Giáo Viên','2021-11-23 01:31:39'),(3,'Học Sinh','2021-11-23 01:31:39');
+INSERT INTO `role` VALUES (1,'Admin','2021-11-23 01:31:39'),(2,'Giáo Viên','2021-11-23 01:31:39'),(3,'Học Sinh','2021-11-23 01:31:39'),(4,'Giáo vụ','2021-12-04 20:45:01');
 /*!40000 ALTER TABLE `role` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -519,7 +591,7 @@ CREATE TABLE `scoretype` (
   `active` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `score_name` (`score_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -528,7 +600,7 @@ CREATE TABLE `scoretype` (
 
 LOCK TABLES `scoretype` WRITE;
 /*!40000 ALTER TABLE `scoretype` DISABLE KEYS */;
-INSERT INTO `scoretype` VALUES (1,'15 phút',1,1),(2,'1 tiết',1,1);
+INSERT INTO `scoretype` VALUES (1,'15 phút',1,1),(2,'1 tiết',1,1),(3,'Cuối Kì',2,1);
 /*!40000 ALTER TABLE `scoretype` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -557,7 +629,7 @@ CREATE TABLE `semester` (
 
 LOCK TABLES `semester` WRITE;
 /*!40000 ALTER TABLE `semester` DISABLE KEYS */;
-INSERT INTO `semester` VALUES (1,'Học Kỳ I','HKI','2021-11-21 19:08:24',0),(2,'Học Kỳ II','HKII','2021-11-21 19:08:24',0);
+INSERT INTO `semester` VALUES (1,'Học Kỳ I','HKI','2021-11-21 19:08:24',1),(2,'Học Kỳ II','HKII','2021-11-21 19:08:24',0);
 /*!40000 ALTER TABLE `semester` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -579,7 +651,7 @@ CREATE TABLE `student` (
   KEY `user_id` (`user_id`),
   CONSTRAINT `student_ibfk_1` FOREIGN KEY (`course_id`) REFERENCES `course` (`id`),
   CONSTRAINT `student_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -588,7 +660,7 @@ CREATE TABLE `student` (
 
 LOCK TABLES `student` WRITE;
 /*!40000 ALTER TABLE `student` DISABLE KEYS */;
-INSERT INTO `student` VALUES (1,'HS00001',4,1,'2021-11-23 20:29:35'),(2,'HS00002',5,1,'2021-11-23 21:21:06'),(3,'HS00003',6,1,'2021-11-23 21:21:06');
+INSERT INTO `student` VALUES (1,'HS00001',4,1,'2021-11-23 20:29:35'),(2,'HS00002',5,1,'2021-11-23 21:21:06'),(3,'HS00003',6,1,'2021-11-23 21:21:06'),(4,'HS00004',8,1,'2021-11-30 08:56:02');
 /*!40000 ALTER TABLE `student` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -615,7 +687,7 @@ CREATE TABLE `studentinclass` (
 
 LOCK TABLES `studentinclass` WRITE;
 /*!40000 ALTER TABLE `studentinclass` DISABLE KEYS */;
-INSERT INTO `studentinclass` VALUES (1,1),(1,2),(2,3);
+INSERT INTO `studentinclass` VALUES (1,1),(1,2),(2,3),(1,4);
 /*!40000 ALTER TABLE `studentinclass` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -634,7 +706,7 @@ CREATE TABLE `subject` (
   `created_at` datetime NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `subject_name` (`subject_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -643,7 +715,7 @@ CREATE TABLE `subject` (
 
 LOCK TABLES `subject` WRITE;
 /*!40000 ALTER TABLE `subject` DISABLE KEYS */;
-INSERT INTO `subject` VALUES (1,'Ngữ Văn',1,0,'2021-11-21 19:08:24'),(2,'Toán',1,0,'2021-11-21 19:08:24');
+INSERT INTO `subject` VALUES (1,'Ngữ Văn',1,0,'2021-11-21 19:08:24'),(2,'Toán',1,0,'2021-11-21 19:08:24'),(3,'Giáo Dục Công Dân',1,0,'2021-12-05 12:05:23');
 /*!40000 ALTER TABLE `subject` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -665,7 +737,7 @@ CREATE TABLE `subjecttranscript` (
   KEY `transcript_info_id` (`transcript_info_id`),
   CONSTRAINT `subjecttranscript_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `student` (`id`),
   CONSTRAINT `subjecttranscript_ibfk_2` FOREIGN KEY (`transcript_info_id`) REFERENCES `teachingassignment` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -674,6 +746,7 @@ CREATE TABLE `subjecttranscript` (
 
 LOCK TABLES `subjecttranscript` WRITE;
 /*!40000 ALTER TABLE `subjecttranscript` DISABLE KEYS */;
+INSERT INTO `subjecttranscript` VALUES (1,1,36,NULL,'2021-11-30 08:33:05'),(2,2,36,NULL,'2021-11-30 08:33:05'),(3,1,37,NULL,'2021-11-30 08:33:05'),(4,2,37,NULL,'2021-11-30 08:33:05'),(5,4,36,NULL,'2021-11-30 08:56:02'),(6,4,37,NULL,'2021-11-30 08:56:02'),(8,1,36,NULL,'2021-11-30 10:15:14'),(9,1,37,NULL,'2021-11-30 10:15:14'),(11,2,36,NULL,'2021-11-30 10:15:14'),(12,2,37,NULL,'2021-11-30 10:15:14'),(14,1,38,8.25,'2021-12-04 11:33:54'),(15,2,38,4.75,'2021-12-04 11:33:54'),(16,4,38,8.62,'2021-12-04 11:33:54'),(17,1,39,NULL,'2021-12-04 11:33:54'),(18,2,39,NULL,'2021-12-04 11:33:54'),(19,4,39,NULL,'2021-12-04 11:33:54');
 /*!40000 ALTER TABLE `subjecttranscript` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -695,7 +768,7 @@ CREATE TABLE `teacher` (
   KEY `user_id` (`user_id`),
   CONSTRAINT `teacher_ibfk_1` FOREIGN KEY (`subject_id`) REFERENCES `subject` (`id`),
   CONSTRAINT `teacher_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -704,7 +777,7 @@ CREATE TABLE `teacher` (
 
 LOCK TABLES `teacher` WRITE;
 /*!40000 ALTER TABLE `teacher` DISABLE KEYS */;
-INSERT INTO `teacher` VALUES (1,'GV00001',1,2,'2021-11-23 01:36:03'),(3,'GV00002',3,1,'2021-11-23 01:42:11');
+INSERT INTO `teacher` VALUES (1,'GV00001',1,3,'2021-11-23 01:36:03'),(3,'GV00002',3,1,'2021-11-23 01:42:11');
 /*!40000 ALTER TABLE `teacher` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -734,7 +807,7 @@ CREATE TABLE `teachingassignment` (
   CONSTRAINT `teachingassignment_ibfk_3` FOREIGN KEY (`semester_id`) REFERENCES `semester` (`id`),
   CONSTRAINT `teachingassignment_ibfk_4` FOREIGN KEY (`subject_id`) REFERENCES `subject` (`id`),
   CONSTRAINT `teachingassignment_ibfk_5` FOREIGN KEY (`teacher_id`) REFERENCES `teacher` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=40 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -743,7 +816,7 @@ CREATE TABLE `teachingassignment` (
 
 LOCK TABLES `teachingassignment` WRITE;
 /*!40000 ALTER TABLE `teachingassignment` DISABLE KEYS */;
-INSERT INTO `teachingassignment` VALUES (1,2,1,1,1,1,'2021-11-23 01:36:03'),(2,1,3,2,1,1,'2021-11-23 01:42:11'),(3,2,1,2,1,1,'2021-11-23 11:56:26');
+INSERT INTO `teachingassignment` VALUES (36,1,3,1,1,1,'2021-11-30 08:33:05'),(37,1,3,1,2,1,'2021-11-30 08:33:05'),(38,2,1,1,1,1,'2021-12-04 11:33:54'),(39,2,1,1,2,1,'2021-12-04 11:33:54');
 /*!40000 ALTER TABLE `teachingassignment` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -766,6 +839,7 @@ CREATE TABLE `user` (
   `image` varchar(200) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `role_id` int(11) NOT NULL,
   `created_at` datetime NOT NULL,
+  `image_id` varchar(200) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `ethnic_id` (`ethnic_id`),
   KEY `gender_id` (`gender_id`),
@@ -775,7 +849,7 @@ CREATE TABLE `user` (
   CONSTRAINT `user_ibfk_2` FOREIGN KEY (`gender_id`) REFERENCES `gender` (`id`),
   CONSTRAINT `user_ibfk_3` FOREIGN KEY (`nationality_id`) REFERENCES `nationality` (`id`),
   CONSTRAINT `user_ibfk_4` FOREIGN KEY (`role_id`) REFERENCES `role` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -784,7 +858,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'Trần Quang',1,'2000-11-13',1,1,'Nam Trà My','Quảng Nam',NULL,2,'2021-11-23 01:36:03'),(3,'Võ Thành Vinh',1,'1997-08-11',1,1,'Quảng Ngãi','Quảng Ngãi',NULL,2,'2021-11-23 01:42:11'),(4,'Nguyễn Quang Vinh',1,'2001-04-03',1,1,'Thủ Đức','Hà Tĩnh',NULL,3,'2021-11-23 20:29:35'),(5,'Nguyễn Thanh Hoàng',1,'2001-02-07',1,1,'Quận 12','Huế',NULL,3,'2021-11-23 21:21:06'),(6,'Thiều Quang Huy',1,'2001-12-02',1,1,'Tô Ngọc Vân','Thanh Hóa',NULL,3,'2021-11-23 21:21:06');
+INSERT INTO `user` VALUES (1,'Trần Quang',1,'2000-11-13',1,1,'Nam Trà My','Quảng Nam','https://res.cloudinary.com/dsqpeicna/image/upload/v1638680176/tdscb4gf4erq4uqb2gvv.jpg',2,'2021-11-23 01:36:03','tdscb4gf4erq4uqb2gvv'),(3,'Võ Thành Vinh',1,'1997-08-11',1,1,'Quảng Ngãi','Quảng Ngãi',NULL,2,'2021-11-23 01:42:11',NULL),(4,'Nguyễn Quang Vinh',1,'2001-04-03',1,1,'Thủ Đức','Hà Tĩnh','https://res.cloudinary.com/dsqpeicna/image/upload/v1638637182/xcwkxg4wdsp4qyhpcxgq.jpg',3,'2021-11-23 20:29:35','xcwkxg4wdsp4qyhpcxgq'),(5,'Nguyễn Thanh Hoàng',1,'2001-02-07',1,1,'Quận 12','Huế',NULL,3,'2021-11-23 21:21:06',NULL),(6,'Thiều Quang Huy',1,'2001-12-02',1,1,'Tô Ngọc Vân','Thanh Hóa','https://res.cloudinary.com/dsqpeicna/image/upload/v1638679910/ntyozt79ksmjcc2g4gwp.png',3,'2021-11-23 21:21:06','ntyozt79ksmjcc2g4gwp'),(8,'Lưu Quang Vũ',1,'2005-02-14',1,1,'TP Hồ Chí Minh','Vũng Tàu',NULL,3,'2021-11-30 08:56:02',NULL),(10,'Lê Dương Quá',1,'1991-04-14',1,1,'1 Võ Văn Ngân, Thủ Đức','Thanh Hóa',NULL,4,'2021-12-04 20:45:01',NULL),(21,'Nguyễn Văn Trường',1,'2001-08-08',1,1,'Gò Vấp','Quảng Nam','https://res.cloudinary.com/dsqpeicna/image/upload/v1638680354/npf4ypyj9u15te28hj3q.jpg',1,'2021-12-05 11:10:52','npf4ypyj9u15te28hj3q'),(24,'Lê Văn Dương',1,'2008-12-01',1,1,'Tây Thạnh','Bến Tre','https://res.cloudinary.com/dsqpeicna/image/upload/v1638678740/c0ptkz7w9fnyl8xtpn2z.jpg',3,'2021-12-05 11:32:01','c0ptkz7w9fnyl8xtpn2z'),(27,'Lâm Tâm Như',2,'1994-01-12',1,1,'35 Phạm Văn Đồng','Quảng Ninh','https://res.cloudinary.com/dsqpeicna/image/upload/v1638681645/coygtmdmgtsmsamfjn86.jpg',4,'2021-12-05 12:18:53','coygtmdmgtsmsamfjn86');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -797,4 +871,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-11-27 12:49:07
+-- Dump completed on 2021-12-05 23:57:22

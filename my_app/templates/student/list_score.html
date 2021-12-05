@@ -1,0 +1,57 @@
+{% extends 'admin/master.html' %}
+{% block body %}
+<div class="row">
+    <div class="card" style="position: relative; width:90%; margin:auto; text-align: center;">
+        <div class="card-header bg-primary">
+            <h5 class="text-white" style="text-align: center;">BẢNG ĐIỂM</h5>
+        </div>
+    </div>
+
+    <div style="background: white; height: 0px; padding-top:10px; padding-bottom:-30px; position: relative;
+                width:90%; margin:auto; text-align: center;"></div>
+</div>
+
+<div class="row">
+    <div class="card" style="position: relative; width:90%; margin:auto; text-align: center;">
+        <p style="color:#36383a; margin-left: 30px; text-align: left; padding-top:9px;  height: 25px;">{{semester}}</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="card"
+         style="background: white; padding-top:10px; padding-bottom:-30px; position: relative; width:90%; margin:auto; ">
+        <div class="table-responsive">
+            <table class="table">
+                <thead class="thead-light">
+                <tr>
+                    {% for item in listTitle %}
+                    <th scope="col">{{item}}</th>
+                    {% endfor %}
+                </tr>
+                </thead>
+                <tbody>
+                {% for indexRow in range(row) %}
+                <tr>
+                    {% for indexColumn in range(column) %}
+                    <td>{{detailsTranscript[indexRow][indexColumn]}}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="card" style="position: relative; width:90%; margin:auto; text-align: center;">
+        <div class="form-group row pb-5" style="padding-bottom: -20px; height: 10px;">
+            <div class="col-sm-10" style="position: relative; text-align:right;">
+                <p>Điểm Trung Bình {{semester}}:</p>
+            </div>
+            <div class="col-sm-2" style="text-align: left;">
+                <p>{{avgYear}}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock  %}

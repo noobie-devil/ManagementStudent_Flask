@@ -7,6 +7,7 @@ from my_app.my_base_view import MyBaseView
 class MyAdminIndexView(AdminIndexView):
 	def is_visible(self):
 		return False
+
 	@expose('/')
 	def index(self):
 		if not current_user.is_authenticated or current_user.is_admin() == False:
@@ -336,8 +337,8 @@ class TeacherView(UserView):
 			return super(TeacherView,self).after_model_change(form,model,is_created)
 
 def get_all_school_year():
-    year = SchoolYear.query.all()
-    return [(school_year.id, school_year.year) for school_year in year]
+	year = SchoolYear.query.all()
+	return [(school_year.id, school_year.year) for school_year in year]
 
 class ClassInfoView(MyBaseView):
 	column_filters = [
@@ -355,21 +356,28 @@ class ClassInfoView(MyBaseView):
 	form_excluded_columns = ('teacher', 'amount_std', 'student_In_Class')
 	column_list = ('in_class.class_name', 'school_year', 'teacher.user.full_name', 'amount_std')
 
+	def after_model_change(self, form, model, is_created):
+		if is_created:
+			if model.amount_std == None:
+				model.amount_std = 0
+			self.session.commit()
+			
 
 class AccountView(MyBaseView):
-    # column_exclude_list = ['password']
-    column_list = ('user.full_name','username', 'password_hash', 'active', 'created_at' )
-    column_labels = dict(password_hash='Password Hashed', created_at='Ngày tạo')
-    form_columns = ('user','username','password', 'role', 'active')
-    form_extra_fields = {
-        'password': fields.PasswordField(label='Password:',validators=[Length(min=8, max=60), DataRequired()])
-    }
-    def on_model_change(self, form, Account, is_created):
-        if form.password.data:
-        	Account.password = form.password.data
+	# column_exclude_list = ['password']
+	column_list = ('user.full_name','username', 'password_hash', 'active', 'created_at')
+	column_labels = dict(password_hash='Password Hashed', created_at='Ngày tạo')
+	form_columns = ('user','username','password', 'role', 'active')
+	form_extra_fields = {
+		'password': fields.PasswordField(label='Password:',validators=[Length(min=8, max=60), DataRequired()])
+	}
+
+	def on_model_change(self, form, Account, is_created):
+		if form.password.data:
+			Account.password = form.password.data
+
 
 class PersonalInfoView(MyBaseView):
-
 	list_template = 'admin/info.html'
 
 	@expose('/')
@@ -404,6 +412,8 @@ class PersonalInfoView(MyBaseView):
 		return super(PersonalInfoView, self).render(template, **kwargs)
 
 class ChangePasswordView(BaseView):
+	def is_visible(self):
+		return False
 	@expose('/', methods=['GET','POST'])
 	def index(self):
 		form = ChangePassForm()
@@ -421,67 +431,13 @@ class ChangePasswordView(BaseView):
 						return redirect(url_for('_teacher.index'))
 					if attempted_user.is_student():
 						return redirect(url_for('_student.index'))
+					if attempted_user.is_edu_office():
+						return redirect(url_for('_edu_office.index'))						
 				else:
 					flash(f'Mật khẩu xác thực không trùng khớp!!!', category='danger')
 			else:
 				flash(f'Mật khẩu không đúng!!!', category='danger')
 		return self.render('admin/change_password.html', form=form)
-
-
-		# if not current_user.is_authenticated:
-		# 	flash('Please log in first...', category='danger')
-		# 	# next_url = request.url
-		# 	# login_url = '%s?next=%s' % (url_for('login_page'), next_url)
-		# 	return redirect(url_for('login_page'))
-		# if current_user.is_admin():	
-		# 	return self.render('admin/info.html')
-		# if current_user.is_student():
-		# 	return self.render('student/info.html')
-
-# 	def is_accessible(self):
-# 		return current_user.is_authenticated
-
-# 	def inaccessible_callback(self, name, **kwargs):
-# 		flash('Yêu cầu truy cập không khả dụng!! Hãy đăng nhập', category='danger')
-# 		return redirect(url_for('login_page'))	
-
-# 	@expose('/edit', methods=['GET','POST'])
-# 	def edit(self):
-# 		update_info_form = UpdateInfoForm()
-# 		if request.method == "POST":
-# 		# if update_info_form.validate_on_submit():
-# 			more_info = MoreInfo.query.filter_by(user_id=current_user.user_id).first()
-# 			if more_info is not None:
-# 				more_info.email = update_info_form.u_email.data
-# 				more_info.phone = update_info_form.u_phone.data
-# 				more_info.current_residence = update_info_form.u_residence.data
-# 				more_info.note = update_info_form.note.data
-# 			else: 
-# 				more_info = MoreInfo(user_id=current_user.user_id,email=update_info_form.u_email.data,phone=update_info_form.u_phone.data,current_residence=update_info_form.u_residence.data,note=update_info_form.note.data,modified_at=datetime.now())
-# 				db.session.add(more_info)
-			
-# 			if current_user.role.name == "Học sinh":
-# 				student_to_update = Student.query.filter_by(user_id=current_user.user_id).first()
-# 				family_info = FamilyInfo(student_id=student_to_update.id, full_name=update_info_form.contact_name.data, phone=update_info_form.contact_phone.data, current_residence=update_info_form.contact_residence.data, modified_at=datetime.now())
-# 				db.session.add(family_info)
-# 			db.session.commit()
-
-# 			return redirect(url_for('admin_info.index'))
-# 		more_info = MoreInfo.query.filter_by(user_id=current_user.user_id)
-# 		return self.render('admin/edit_info.html', update_info_form=update_info_form, more_info=more_info)
-
-# 	def render(self, template, **kwargs):
-# 		more_info = MoreInfo.query.get(current_user.user_id)
-# 		if current_user.role.name == "Học Sinh":
-# 			student = Student.query.filter_by(user_id=current_user.user_id).first()
-# 			family_info = FamilyInfo.query.filter_by(student_id=student.id).first()
-# 			if family_info is not None:
-# 				kwargs['family_info'] = family_info
-# 			kwargs['student'] = student	
-# 		if more_info is not None:
-# 			kwargs['more_info'] = more_info
-
-# 		return super(PersonalInfoView, self).render(template, **kwargs)
 
 
 class TeachingAssignmentView(MyBaseView):
@@ -524,9 +480,6 @@ class TeachingAssignmentView(MyBaseView):
 		return dicti
 
 
-	# def create_subject_transcript(self,model):
-	# 	model = SubjectTranscript()
-
 	def after_model_change(self, form, model, is_created):
 		if is_created:
 			for std in model.class_info.student_In_Class:
@@ -539,6 +492,9 @@ class TeachingAssignmentView(MyBaseView):
 
 class StudentInClassView(MyBaseView):
 	def after_model_change(self, form, model, is_created):
+		class_info = self.session.query(ClassInfo).filter_by(id=model.class_info_id)
+		class_info.amount_std += 1
+		self.session.commit()
 		for teaching_assigment in self.session.query(TeachingAssignment).filter_by(class_info_id = model.class_info_id):
 			subj = SubjectTranscript()
 			subj.student_id = model.student_id
@@ -564,13 +520,16 @@ admin.add_view(EducationalOfficeView(EducationalOffice, db.session, name="Phòng
 
 admin.add_view(MyBaseView(Class, db.session, category="Quản lý lớp học", name="Thông tin lớp học"))
 admin.add_view(ClassInfoView(ClassInfo, db.session, category="Quản lý lớp học", name="Danh sách lớp học trong năm"))
-admin.add_view(TeachingAssignmentView(TeachingAssignment, db.session, category="Quản lý lớp học",name="Phân công giảng dạy"))
+admin.add_view(TeachingAssignmentView(TeachingAssignment, db.session, category="Quản lý lớp học",name="Phân công giảng dạy", menu_icon_type="ti", menu_icon_value="ti-briefcase"))
 admin.add_view(StudentInClassView(StudentInClass, db.session, category="Quản lý lớp học", name="Phân lớp"))
 
 admin.add_view(MyBaseView(Subject, db.session, name="Quản lý môn học", menu_icon_type="ti", menu_icon_value="ti-book"))
 
+admin.add_view(MyBaseView(InputScoreTime, db.session, name='Mở chỉnh sửa điểm'))
+
 admin.add_view(MyBaseView(ScoreType, db.session, category="Quản lý điểm", name="Thông tin bảng điểm"))
 admin.add_view(MyBaseView(SubjectTranscript, db.session, category="Quản lý điểm", name="Điểm theo môn học"))
+
 
 
 admin.add_view(MyBaseView(ResumeImageFields, db.session, name="Form hồ sơ nhập học", menu_icon_type="ti", menu_icon_value="ti-write"))

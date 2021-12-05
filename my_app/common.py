@@ -1,6 +1,6 @@
 from my_app import db,app
 from my_app.models import *
-from flask import Flask, render_template, redirect, url_for, flash, request, json, Response
+from flask import Flask, render_template, redirect, url_for, flash, request, json, Response,session
 from flask_admin import Admin
 from my_app import admin
 from flask_admin.contrib import sqla

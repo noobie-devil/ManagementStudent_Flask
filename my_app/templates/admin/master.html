@@ -156,7 +156,6 @@
                                     {% else %}
                                     <img src="/static/assets/images/images.png" class="img-radius" alt="User-Profile-Image">
                                     {% endif %}
-                                    
                                     <span>{{current_user.user.full_name}}</span>
                                     <i class="ti-angle-down"></i>
                                 </a>
@@ -171,7 +170,9 @@
                                         {% if current_user.is_student() %}
                                             <a href="{{ url_for('_changePasswordStudent.index') }}"><i class="ti-settings"></i>Đổi mật khẩu</a>
                                         {% endif %}
-                                        
+                                        {% if current_user.is_edu_office() %}
+                                            <a href="{{ url_for('_changePasswordEduOffice.index') }}"><i class="ti-settings"></i>Đổi mật khẩu</a>
+                                        {% endif %}
                                     </li>
                                     <li>
                                         <a href="{{request.url + 'info'}}">
@@ -219,6 +220,9 @@
                                             {% endif %}
                                             {% if current_user.is_student() %}
                                                 <a href="{{ url_for('_changePasswordStudent.index') }}"><i class="ti-settings"></i>Đổi mật khẩu</a>
+                                            {% endif %}
+                                            {% if current_user.is_edu_office() %}
+                                                <a href="{{ url_for('_changePasswordEduOffice.index') }}"><i class="ti-settings"></i>Đổi mật khẩu</a>
                                             {% endif %}
                                             <a href="{{request.url + 'info'}}"><i class="ti-user"></i>Thông tin cá nhân</a>
                                             <a href="{{ url_for('logout') }}"><i class="ti-layout-sidebar-left"></i>Đăng xuất</a>

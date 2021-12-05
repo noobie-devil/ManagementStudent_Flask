@@ -131,10 +131,34 @@
 			<i class="icofont icofont-info-square"></i>
 			Cập nhật
 		</button></a>
+		{% if current_user.is_admin() %}
+		<a href="{{ url_for('_changePasswordAdmin.index') }}">
 		<button class="btn btn-success btn-outline-success">
 			<i class="ti-lock"></i>
 			Đổi mật khẩu
-		</button>
+		</button></a>
+		{% endif %}
+		{% if current_user.is_teacher() %}
+		<a href="{{ url_for('_changePasswordTeacher.index') }}">
+		<button class="btn btn-success btn-outline-success">
+			<i class="ti-lock"></i>
+			Đổi mật khẩu
+		</button></a>
+		{% endif %}
+		{% if current_user.is_student() %}
+		<a href="{{ url_for('_changePasswordStudent.index') }}">
+		<button class="btn btn-success btn-outline-success">
+			<i class="ti-lock"></i>
+			Đổi mật khẩu
+		</button></a>
+		{% endif %}
+		{% if current_user.is_edu_office() %}
+		<a href="{{ url_for('_changePasswordEduOffice.index') }}">
+		<button class="btn btn-success btn-outline-success">
+			<i class="ti-lock"></i>
+			Đổi mật khẩu
+		</button></a>
+		{% endif %}
 			
 	</div>
 </div>

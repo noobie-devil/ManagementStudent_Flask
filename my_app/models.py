@@ -327,6 +327,7 @@ class Resume(db.Model):
 	uploaded_at = db.Column(db.DateTime, nullable=False, default=datetime.now())
 	modified_at = db.Column(db.DateTime, nullable=True, default=datetime.now())
 	submitted_at = db.Column(db.DateTime, nullable=False, default=datetime.now())
+	confirm = db.Column(db.Boolean, nullable=False, default=False)
 
 class ResumeImageStorage(db.Model):
 	__tablename__ = 'resumeImageStorage'
