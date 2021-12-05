@@ -1,6 +1,8 @@
 from my_app.common import *
 from flask import Markup
+from my_app.forms import ChangePassForm
 from my_app.my_base_view import MyBaseView
+
 
 class MyAdminIndexView(AdminIndexView):
 	def is_visible(self):
@@ -149,16 +151,17 @@ class UserView(MyBaseView):
 				self.session.flush()
 				self.session.delete(account)
 				self.session.commit()
-			user = self.session.query(User).filter_by(id=model.user.id).first()
-			if user != None:
-				self.session.flush()
-				self.session.delete(user)
-				self.session.commit()
+			
 			get_image = model.user.image_id
 			self.on_model_delete(model)
 			self.session.flush()
 			self.session.delete(model)
 			self.session.commit()
+			user = self.session.query(User).filter_by(id=model.user.id).first()
+			if user != None:
+				self.session.flush()
+				self.session.delete(user)
+				self.session.commit()
 			if get_image != None:
 				cloudinary.uploader.destroy(get_image, invalidate=True)
 		except Exception as ex:
@@ -400,6 +403,86 @@ class PersonalInfoView(MyBaseView):
 			kwargs['more_info'] = more_info
 		return super(PersonalInfoView, self).render(template, **kwargs)
 
+class ChangePasswordView(BaseView):
+	@expose('/', methods=['GET','POST'])
+	def index(self):
+		form = ChangePassForm()
+		attempted_user = Account.query.filter_by(user_id=current_user.user_id).first()
+		if request.method == "POST":
+			if attempted_user.check_password_correction(attempted_password=form.o_password.data):
+				self._template_args["test"] = "OK"
+				if form.n_password.data == form.c_password.data:
+					attempted_user.password = form.n_password.data
+					flash(f'Đổi mật khẩu thành công!!!', category='success')
+					db.session.commit()
+					if attempted_user.is_admin():
+						return redirect(url_for('admin.index'))
+					if attempted_user.is_teacher():
+						return redirect(url_for('_teacher.index'))
+					if attempted_user.is_student():
+						return redirect(url_for('_student.index'))
+				else:
+					flash(f'Mật khẩu xác thực không trùng khớp!!!', category='danger')
+			else:
+				flash(f'Mật khẩu không đúng!!!', category='danger')
+		return self.render('admin/change_password.html', form=form)
+
+
+		# if not current_user.is_authenticated:
+		# 	flash('Please log in first...', category='danger')
+		# 	# next_url = request.url
+		# 	# login_url = '%s?next=%s' % (url_for('login_page'), next_url)
+		# 	return redirect(url_for('login_page'))
+		# if current_user.is_admin():	
+		# 	return self.render('admin/info.html')
+		# if current_user.is_student():
+		# 	return self.render('student/info.html')
+
+# 	def is_accessible(self):
+# 		return current_user.is_authenticated
+
+# 	def inaccessible_callback(self, name, **kwargs):
+# 		flash('Yêu cầu truy cập không khả dụng!! Hãy đăng nhập', category='danger')
+# 		return redirect(url_for('login_page'))	
+
+# 	@expose('/edit', methods=['GET','POST'])
+# 	def edit(self):
+# 		update_info_form = UpdateInfoForm()
+# 		if request.method == "POST":
+# 		# if update_info_form.validate_on_submit():
+# 			more_info = MoreInfo.query.filter_by(user_id=current_user.user_id).first()
+# 			if more_info is not None:
+# 				more_info.email = update_info_form.u_email.data
+# 				more_info.phone = update_info_form.u_phone.data
+# 				more_info.current_residence = update_info_form.u_residence.data
+# 				more_info.note = update_info_form.note.data
+# 			else: 
+# 				more_info = MoreInfo(user_id=current_user.user_id,email=update_info_form.u_email.data,phone=update_info_form.u_phone.data,current_residence=update_info_form.u_residence.data,note=update_info_form.note.data,modified_at=datetime.now())
+# 				db.session.add(more_info)
+			
+# 			if current_user.role.name == "Học sinh":
+# 				student_to_update = Student.query.filter_by(user_id=current_user.user_id).first()
+# 				family_info = FamilyInfo(student_id=student_to_update.id, full_name=update_info_form.contact_name.data, phone=update_info_form.contact_phone.data, current_residence=update_info_form.contact_residence.data, modified_at=datetime.now())
+# 				db.session.add(family_info)
+# 			db.session.commit()
+
+# 			return redirect(url_for('admin_info.index'))
+# 		more_info = MoreInfo.query.filter_by(user_id=current_user.user_id)
+# 		return self.render('admin/edit_info.html', update_info_form=update_info_form, more_info=more_info)
+
+# 	def render(self, template, **kwargs):
+# 		more_info = MoreInfo.query.get(current_user.user_id)
+# 		if current_user.role.name == "Học Sinh":
+# 			student = Student.query.filter_by(user_id=current_user.user_id).first()
+# 			family_info = FamilyInfo.query.filter_by(student_id=student.id).first()
+# 			if family_info is not None:
+# 				kwargs['family_info'] = family_info
+# 			kwargs['student'] = student	
+# 		if more_info is not None:
+# 			kwargs['more_info'] = more_info
+
+# 		return super(PersonalInfoView, self).render(template, **kwargs)
+
 
 class TeachingAssignmentView(MyBaseView):
 	column_list = ('subject','teacher.user.full_name', 'class_info', 'semester', 'school_year')
@@ -501,6 +584,8 @@ admin.add_view(MyBaseView(Grade,db.session, category="Thông tin chung", name="K
 admin.add_view(MyBaseView(Gender, db.session, category="Thông tin chung", name="Giới tính") )
 admin.add_view(MyBaseView(Nationality, db.session, category="Thông tin chung", name="Quốc tịch"))
 admin.add_view(MyBaseView(Ethnic, db.session, category="Thông tin chung", name="Dân tộc"))
+
+admin.add_view(ChangePasswordView(name="Đổi mật khẩu", url="/admin/change-password", endpoint='_changePasswordAdmin'))
 
 from my_app.student import *
 from my_app.teacher import *

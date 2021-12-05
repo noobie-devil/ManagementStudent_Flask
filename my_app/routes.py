@@ -4,7 +4,7 @@ from my_app.models import *
 from my_app.forms import LoginForm
 from my_app import db
 from flask_login import login_user, logout_user, login_required, current_user
-from my_app import admin
+from my_app import admin, teacher
 
 
 @app.route('/', methods=('GET', 'POST'))

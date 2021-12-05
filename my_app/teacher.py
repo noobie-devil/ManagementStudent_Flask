@@ -206,8 +206,14 @@ class PersonalInfoView_Teacher(PersonalInfoView):
 		kwargs['teacher'] = teacher
 		return super(PersonalInfoView_Teacher, self).render(template, **kwargs)
 
+class ChangePasswordView_Teacher(ChangePasswordView):
+	@expose('/', methods=['GET','POST'])
+	def index(self):
+		return super(ChangePasswordView_Teacher, self).index()
+
 teacher = Admin(app, name='Teacher', index_view=MyTeacherIndexView(url='/teacher', endpoint='_teacher'), base_template='master.html', template_mode='bootstrap4', url='/teacher', endpoint='_teacher')
 teacher.add_view(PersonalInfoView_Teacher(MoreInfo, db.session, name="Thông tin cá nhân", url='/teacher/info', endpoint='teacher_info', menu_icon_type="ti", menu_icon_value="ti-pencil"))
 teacher.add_view(TeachingAssignmentView_Teacher(TeachingAssignment, db.session, name='Danh sách lớp giảng dạy', url='/teacher/list-class',endpoint='teacher_assignment'))
 teacher.add_view(StudentInClassView_Teacher(StudentInClass, db.session, name='Danh sách học sinh', url='/teacher/list-class', endpoint='class_details'))
 teacher.add_view(SubjectTranscriptView_Teacher(SubjectTranscript, db.session, name='Nhập điểm', url='/teacher/list-class', endpoint='score'))
+teacher.add_view(ChangePasswordView_Teacher(name="Đổi mật khẩu", url="/teacher/change-password", endpoint='_changePasswordTeacher'))
