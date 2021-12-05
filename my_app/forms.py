@@ -34,16 +34,6 @@ class UpdateInfoForm(FlaskForm):
 	contact_residence = fields.StringField(label="Địa chỉ", validators=[Length(max=100)])
 	submit = fields.SubmitField(label='Lưu')
 
-	# item_cont = fields.FieldList(fields.FormField(LoginForm), min_entries=0, max_entries=100)
-# user_form = {
-# 	'fullname': fields.StringField()
-# }
-class TranscriptEntryForm(FlaskForm):
-	# score_type = fields.StringField()
-	score = fields.FloatField()
-
-class TranscriptForm(FlaskForm):
-	transcripts = fields.FieldList(fields.FormField(TranscriptEntryForm), min_entries=0)
 
 class ChangePassForm(FlaskForm):
 	o_password = fields.PasswordField(label='Old Password:', validators=[Length(min=8, max=60), DataRequired()])
