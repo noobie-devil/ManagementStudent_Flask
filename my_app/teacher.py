@@ -1,6 +1,8 @@
 from my_app.admin import *
 
+
 class MyTeacherIndexView(AdminIndexView):
+
 	def is_visible(self):
 		return False
 
@@ -11,8 +13,6 @@ class MyTeacherIndexView(AdminIndexView):
 			# next_url = request.url
 			# login_url = '%s?next=%s' % (url_for('login_page'), next_url)
 			return redirect(url_for('login_page'))
-		users = User.query.filter_by(id=current_user.user_id).first()
-		self._template_args["info"] = users
 		return redirect(url_for('teacher_assignment.index_view'))
 		# return super(MyTeacherIndexView,self).index()
 	
@@ -24,11 +24,10 @@ class MyBaseTeacherView(MyBaseView):
 		flash('Yêu cầu truy cập không khả dụng!! Hãy đăng nhập', category='danger')
 		return redirect(url_for('login_page'))
 
+
 class TeachingAssignmentView_Teacher(MyBaseTeacherView):
 	column_list = ('subject','teacher.user.full_name', 'class_info', 'semester', 'school_year')
-	# column_extra_row_actions = [
-	# 	EndpointLinkRowAction('ti ti-pencil', '.function'),
-	# ]
+
 	column_extra_row_actions = [# Add a new action button
 		TemplateLinkRowAction("custom_row_actions.copy_row", "Show List Students"),
 	]
@@ -46,7 +45,6 @@ class TeachingAssignmentView_Teacher(MyBaseTeacherView):
 	def get_query(self):
 		teacher_id = Teacher.query.filter_by(user_id=current_user.user_id).first().id
 		return self.session.query(self.model).join(Semester).join(SchoolYear).filter(self.model.teacher_id == teacher_id, Semester.active == True, self.model.semester_id == Semester.id, self.model.school_year_id == SchoolYear.id, SchoolYear.active == True)
-	
 
 	def get_count_query(self):
 		teacher_id = Teacher.query.filter_by(user_id=current_user.user_id).first().id
@@ -57,12 +55,9 @@ class TeachingAssignmentView_Teacher(MyBaseTeacherView):
 	def info_view(self):
 		return super(TeachingAssignmentView,self).list_view()
 
-
 class StudentInClassView_Teacher(MyBaseTeacherView):
 	def is_visible(self):
 		return False
-		
-
 	column_list = ('student','student.user.full_name', 'classInfo', 'classInfo.school_year')
 	can_delete = False
 	can_create = False
@@ -81,14 +76,13 @@ class StudentInClassView_Teacher(MyBaseTeacherView):
 	@expose('/class')
 	def list_students(self):
 		self._template_args['teaching_id'] = request.args.get('teaching-id')
-		self._template_args['cid'] = request.args.get('cid')		
+		self._template_args['cid'] = request.args.get('cid')
 		return super(StudentInClassView_Teacher,self).index_view()
 
 
 class SubjectTranscriptView_Teacher(MyBaseTeacherView):
 	def is_visible(self):
 		return False
-
 	column_list = ('student','transcript_details')
 	can_delete = False
 	list_template = 'teacher/edit_score.html'
@@ -105,7 +99,6 @@ class SubjectTranscriptView_Teacher(MyBaseTeacherView):
 	def get_field(self,field):
 		if field.fieldtype == "float":
 			return fields.FloatField(field.label)
-
 
 	@expose('/class/score/ajax-update', methods=['POST'])
 	def update_score_ajax(self):
@@ -172,7 +165,7 @@ class SubjectTranscriptView_Teacher(MyBaseTeacherView):
 			mimetype='application/json'
 		)
 
-	
+
 	def check_editable(self):
 		editable = InputScoreTime.query.filter(InputScoreTime.start_date <= datetime.now(), InputScoreTime.end_date >= datetime.now()).first()
 		if editable != None:
@@ -216,7 +209,7 @@ class SubjectTranscriptView_Teacher(MyBaseTeacherView):
 			self._template_args['score'] = score
 			self._template_args['lists'] = lists
 			session['editable'] = editable
-			return super(SubjectTranscriptView_Teacher,self).index_view()		
+			return super(SubjectTranscriptView_Teacher,self).index_view()
 
 class PersonalInfoView_Teacher(PersonalInfoView):
 	def is_accessible(self):
@@ -236,9 +229,142 @@ class ChangePasswordView_Teacher(ChangePasswordView):
 	def index(self):
 		return super(ChangePasswordView_Teacher, self).index()
 
+
+class InfoSubjectReport:
+	def __init__(self, stt, className, number, passs, percent):
+		self.STT = stt
+		self.ClassName = className
+		self.Number = number
+		self.Pass = passs
+		self.Percent = percent
+
+
+class SubjectReportView_Teacher(BaseView):
+	@expose('/')
+	def index(self):
+		allDataSubjectReport = []
+		countDataSubjectReport = 0
+		subject = ""
+		getTeacher = Teacher.query.filter_by(user_id=current_user.user_id).first()
+		getSemester = Semester.query.filter_by(active = 1)
+
+		for value_semester in getSemester:
+			classTeaching = TeachingAssignment.query.join(ClassInfo).filter(TeachingAssignment.teacher_id == getTeacher.id, TeachingAssignment.semester_id == value_semester.id, TeachingAssignment.class_info_id == ClassInfo.id, ClassInfo.amount_std > 0)
+			try:
+				subject = classTeaching[0].subject.subject_name
+			except:
+				pass
+
+			transcript_info_id = []
+			sizeClassTeaching = 0
+			for item in classTeaching:
+				sizeClassTeaching += 1
+				transcript_info_id.append(item.id)
+
+			avgStudent = SubjectReportView_Teacher.GetStudentPass(transcript_info_id)
+			countDataSubjectReport += 1
+			dataSubjectReport = SubjectReportView_Teacher.GetSubjectReport(sizeClassTeaching, avgStudent, classTeaching)
+			allDataSubjectReport.append(dataSubjectReport)
+
+		countElementDataSubjectReport = []
+		for item in allDataSubjectReport:
+			countElementDataSubjectReport.append(len(item))
+
+		self._template_args["getSemester"] = getSemester
+		self._template_args["subject"] = subject
+		self._template_args["countDataSubjectReport"] = countDataSubjectReport
+		self._template_args["countElementDataSubjectReport"] = countElementDataSubjectReport
+		self._template_args["allDataSubjectReport"] = allDataSubjectReport
+		return self.render('teacher/subject-report.html')
+
+	@staticmethod
+	def GetStudentPass(transcript_info_id):
+		avgStudent = []
+		for item in transcript_info_id:
+			listSubjectTranscript = SubjectTranscript.query.filter_by(transcript_info_id=item)
+			count = 0
+			for value in listSubjectTranscript:
+				if value.score_average >= 5:
+					count += 1
+			avgStudent.append(count)
+		return avgStudent
+
+	@staticmethod
+	def GetSubjectReport(sizeClassTeaching, avgStudent, classTeaching):
+		dataSubjectReport = []
+		stt = 0
+		for index in range(sizeClassTeaching):
+			stt += 1
+			percent = round((avgStudent[index] / classTeaching[index].class_info.amount_std) * 100, 2)
+			infoSubjectReport = InfoSubjectReport(stt, classTeaching[index].class_info.in_class.class_name,
+												  classTeaching[index].class_info.amount_std, avgStudent[index],
+												  percent)
+			dataSubjectReport.append(infoSubjectReport)
+		return dataSubjectReport
+
+class InfoStudentReport:
+	def __init__(self, id, name, avg, rank):
+		self.Id = id
+		self.FullName = name
+		self.Avg = avg
+		self.Rank = rank
+
+class FinalSemesterReportView_Teacher(BaseView):
+	def is_visible(self):
+		teacher_id = db.session.query(Teacher).filter_by(user_id = current_user.user.id).first().id
+		count = db.session.query(ClassInfo).filter(ClassInfo.teacher_id == teacher_id).count()
+		if count > 0:
+			return True
+		return False
+
+	@expose('/')
+	def index(self):
+		subjectTranscript = SubjectTranscript.query.all()
+		getTeacher = Teacher.query.filter_by(user_id=current_user.user_id).first()
+		classTeaching = TeachingAssignment.query.filter_by(teacher_id=getTeacher.id)
+
+		class_info_id = []
+		for i in classTeaching:
+			if i.class_info.teacher_id == getTeacher.id:
+				class_info_id.append(i.class_info.in_class.id)
+
+		getAllStudentInClass = StudentInClass.query.filter_by(class_info_id=class_info_id[0])
+		allInfoStudentReport = []
+		allScoreAvg = []
+		for idStudent in getAllStudentInClass:
+			id = idStudent.student.id
+			count = 0
+			allScore = 0
+			for value in subjectTranscript:
+				if value.student_id == id:
+					if value.score_average is None:
+						pass
+					else:
+						count += 1
+						allScore += value.score_average
+			fullName = idStudent.student.user.full_name
+			avg = allScore / count
+			rank = ""
+			if avg >= 8:
+				rank = "Giỏi"
+			elif 6.5 <= avg < 8:
+				rank = "Khá"
+			elif 4 <= avg < 6.5:
+				rank = "Trung bình"
+			else:
+				rank = "Yếu"
+			infoStudentReport = InfoStudentReport(idStudent, fullName, round(avg,2), rank)
+			allInfoStudentReport.append(infoStudentReport)
+
+		self._template_args["allInfoStudentReport"] = allInfoStudentReport
+		return self.render('teacher/final_semester_report.html')
+
 teacher = Admin(app, name='Teacher', index_view=MyTeacherIndexView(url='/teacher', endpoint='_teacher'), base_template='master.html', template_mode='bootstrap4', url='/teacher', endpoint='_teacher')
 teacher.add_view(TeachingAssignmentView_Teacher(TeachingAssignment, db.session, name='Danh sách lớp giảng dạy', url='/teacher/list-class',endpoint='teacher_assignment', menu_icon_type="ti", menu_icon_value="ti-briefcase"))
 teacher.add_view(PersonalInfoView_Teacher(MoreInfo, db.session, name="Thông tin cá nhân", url='/teacher/info', endpoint='teacher_info', menu_icon_type="ti", menu_icon_value="ti-pencil"))
 teacher.add_view(StudentInClassView_Teacher(StudentInClass, db.session, name='Danh sách học sinh', url='/teacher/list-class', endpoint='class_details'))
 teacher.add_view(SubjectTranscriptView_Teacher(SubjectTranscript, db.session, name='Nhập điểm', url='/teacher/list-class', endpoint='score'))
 teacher.add_view(ChangePasswordView_Teacher(name="Đổi mật khẩu", url="/teacher/change-password", endpoint='_changePasswordTeacher'))
+teacher.add_view(SubjectReportView_Teacher(name='Báo cáo tổng kết môn', url='/teacher/subject-report', endpoint='subject_report'))
+teacher.add_view(FinalSemesterReportView_Teacher(name='Báo cáo tổng kết học kỳ', url='/teacher/final-semester-report', endpoint='final_semester_report'))
+

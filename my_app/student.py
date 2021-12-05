@@ -99,7 +99,57 @@ class ChangePasswordView_Student(ChangePasswordView):
 	def index(self):
 		return super(ChangePasswordView_Student, self).index()
 
+class Score_Student(BaseView):
+	@expose('/', methods=['GET','POST'])
+	def index(self):
+		getSemester = Semester.query.filter_by(active=1)
+		semester = ""
+		try:
+			semester = getSemester[0].semester_name
+		except:
+			semester = ""
+		getIdStudent = Student.query.filter_by(user_id = current_user.user.id)
+		listTranscriptInfoId = []
+		transcriptInfoId = SubjectTranscript.query.filter_by(student_id = getIdStudent[0].id)
+		for item in transcriptInfoId:
+			if item.score_average is not None:
+				listTranscriptInfoId.append(item)
+
+		listTitle = ["Môn"]
+		getAllScoreType = ScoreType.query.filter_by(active=1)
+		for item in getAllScoreType:
+			listTitle.append(item.score_name)
+		listTitle.append("TBM")
+		detailsTranscript = []
+		column = 0
+		row = 0
+		allScore = 0
+		for item in listTranscriptInfoId:
+			teachingAssignment = TeachingAssignment.query.filter_by(id = item.transcript_info_id)
+			elementDetailsTranscript = DetailsTranscript.query.filter_by(transcript_id = item.id)
+			subject = teachingAssignment[0].subject.subject_name
+			listScore = [subject]
+			getAllScoreType = ScoreType.query.filter_by(active=1)
+			for scoreType in getAllScoreType:
+				for value in elementDetailsTranscript:
+					if value.score_type.id == scoreType.id:
+						listScore.append(value.score)
+			allScore += item.score_average
+			listScore.append(item.score_average)
+			column = len(listScore)
+			row += 1
+			detailsTranscript.append(listScore)
+
+		self._template_args["detailsTranscript"] = detailsTranscript
+		self._template_args["listTitle"] = listTitle
+		self._template_args["column"] = column
+		self._template_args["row"] = row
+		self._template_args["semester"] = semester
+		self._template_args["avgYear"] = round(allScore/row, 2)
+		return self.render('student/list_score.html')
+
 student = Admin(app, name='Student', index_view=MyStudentIndexView(url='/student', endpoint='_student'), base_template='master.html', template_mode='bootstrap4', url='/student', endpoint='_student')
 student.add_view(PersonalInfoView_Student(MoreInfo,db.session, name='Thông tin cá nhân', url='/student/info', endpoint='student_info', menu_icon_type="ti", menu_icon_value="ti-pencil"))
 student.add_view(ConfirmView_Student(name="confirm", url='/student/confirm', endpoint='_confirmStudent'))
 student.add_view(ChangePasswordView_Student(name="Đổi mật khẩu", url="/student/change-password", endpoint='_changePasswordStudent'))
+student.add_view(Score_Student(name="Xem điểm", url="/student/score", endpoint='_scoreStudent'))

@@ -337,8 +337,8 @@ class TeacherView(UserView):
 			return super(TeacherView,self).after_model_change(form,model,is_created)
 
 def get_all_school_year():
-    year = SchoolYear.query.all()
-    return [(school_year.id, school_year.year) for school_year in year]
+	year = SchoolYear.query.all()
+	return [(school_year.id, school_year.year) for school_year in year]
 
 class ClassInfoView(MyBaseView):
 	column_filters = [
@@ -356,21 +356,28 @@ class ClassInfoView(MyBaseView):
 	form_excluded_columns = ('teacher', 'amount_std', 'student_In_Class')
 	column_list = ('in_class.class_name', 'school_year', 'teacher.user.full_name', 'amount_std')
 
+	def after_model_change(self, form, model, is_created):
+		if is_created:
+			if model.amount_std == None:
+				model.amount_std = 0
+			self.session.commit()
+			
 
 class AccountView(MyBaseView):
-    # column_exclude_list = ['password']
-    column_list = ('user.full_name','username', 'password_hash', 'active', 'created_at' )
-    column_labels = dict(password_hash='Password Hashed', created_at='Ngày tạo')
-    form_columns = ('user','username','password', 'role', 'active')
-    form_extra_fields = {
-        'password': fields.PasswordField(label='Password:',validators=[Length(min=8, max=60), DataRequired()])
-    }
-    def on_model_change(self, form, Account, is_created):
-        if form.password.data:
-        	Account.password = form.password.data
+	# column_exclude_list = ['password']
+	column_list = ('user.full_name','username', 'password_hash', 'active', 'created_at')
+	column_labels = dict(password_hash='Password Hashed', created_at='Ngày tạo')
+	form_columns = ('user','username','password', 'role', 'active')
+	form_extra_fields = {
+		'password': fields.PasswordField(label='Password:',validators=[Length(min=8, max=60), DataRequired()])
+	}
+
+	def on_model_change(self, form, Account, is_created):
+		if form.password.data:
+			Account.password = form.password.data
+
 
 class PersonalInfoView(MyBaseView):
-
 	list_template = 'admin/info.html'
 
 	@expose('/')
@@ -485,6 +492,9 @@ class TeachingAssignmentView(MyBaseView):
 
 class StudentInClassView(MyBaseView):
 	def after_model_change(self, form, model, is_created):
+		class_info = self.session.query(ClassInfo).filter_by(id=model.class_info_id)
+		class_info.amount_std += 1
+		self.session.commit()
 		for teaching_assigment in self.session.query(TeachingAssignment).filter_by(class_info_id = model.class_info_id):
 			subj = SubjectTranscript()
 			subj.student_id = model.student_id

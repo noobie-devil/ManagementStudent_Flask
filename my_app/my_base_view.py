@@ -4,7 +4,7 @@ class MyBaseView(ModelView):
 
 	def is_accessible(self):
 		return current_user.is_authenticated and current_user.is_admin()
-
+	
 	def inaccessible_callback(self, name, **kwargs):
 		flash('Yêu cầu truy cập không khả dụng!! Hãy đăng nhập', category='danger')
 		return redirect(url_for('login_page'))

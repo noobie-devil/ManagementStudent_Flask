@@ -48,3 +48,30 @@ def logout():
 	flash("Bạn đã đăng xuất!", category='info')
 	return redirect(url_for('login_page'))
 
+@app.route('/forgot-password', methods=('GET', 'POST'))
+def forgot():
+	if request.method == "POST":
+		email = request.form.get('email')
+		moreinfo_user = MoreInfo.query.filter_by(email = email).first()
+		if moreinfo_user is None:
+			return render_template('forgot-password.html')
+		else:
+			attempted_user = Account.query.filter_by(user_id=moreinfo_user.user_id).first()
+			login_user(attempted_user)
+		return render_template('create-new-password.html', email = current_user.user_id)
+	return render_template('forgot-password.html')
+
+@app.route('/forgot-password/change', methods=('GET', 'POST'))
+def forgot_change():
+	if request.method == "POST":
+		new_password = request.form.get('new_password')
+		confirm_new_password = request.form.get('confirm_new_password')
+		if new_password == confirm_new_password:
+			attempted_user = Account.query.filter_by(user_id=current_user.user_id).first()
+			attempted_user.password = confirm_new_password
+			db.session.commit()
+			flash(f'Đổi mật khẩu thành công!', category='success')
+		else:
+			flash(f'Byebye!', category='danger')
+	logout_user()
+	return redirect(url_for('login_page'))
