@@ -27,10 +27,23 @@
 <body class="bg-gradient-primary">
 
 <div class="container" style="height:auto;">
-    <form class="user" action="{{url_for('_submitConfirmStudent.index')}}" method="POST">
+    <form class="user" action="{{url_for('_confirmStudent.submit')}}" method="POST" enctype="multipart/form-data">
         <div style="color:white; margin-top:45px; margin-bottom:-20px; font-size: 50px; text-align:center; font-size:300%">
             <p>HIKI SCHOOL</p>
         </div>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages%}
+                <div class="alert alert-{{category}}">
+                    <button class="m1-2 mb-1 close " type="button" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    {{message}}
+                </div>
+                {% endfor%}
+            {% endif %}
+        {% endwith %}     
+        
         <!-- Outer Row -->
         <div class="row justify-content-center">
             <div class="col-xl-10 col-lg-12 col-md-9">
@@ -39,7 +52,7 @@
                         <div class="form-group"></div>
                         <div class="form-group">
                             <img style="height: 200px;  position: relative; padding-top:0px; margin-bottom:-20px; margin-left:350px; border-radius: 50%;"
-                                 src="{{student_info.image_id}}" alt="Avatar">
+                                 src="/static/assets/images/Cartoon Color Simple Male Avatar, Person, Man, Avatar PNG and Vector with Transparent Background for Free Download.jpg" alt="Avatar">
                         </div>
                     </div>
                     <div class="card-body p-0">
@@ -49,18 +62,18 @@
 
                                     <div class="form-group">
                                         <p style="position: relative; padding-top:7px; padding-bottom:20px; font-size:15px;"
-                                           class="form-control form-control-user">{{student_info.full_name}}</p>
+                                           class="form-control form-control-user">{{current_user.user.full_name}}</p>
                                     </div>
                                     <div class="form-group">
                                         <p style="position: relative; padding-top:7px; padding-bottom:20px; font-size:15px;"
-                                           class="form-control form-control-user">{{student_info.birthdate}}</p>
+                                           class="form-control form-control-user">{{current_user.user.birthdate}}</p>
                                     </div>
                                     <div class="form-group">
                                         <div class="form-group row pb-5">
                                             <div class="col-sm-4">
                                                 <div style="text-align:center"
                                                      class="custom-control custom-checkbox small">
-                                                    {% if student_info.gender_id == 1%}
+                                                    {% if current_user.user.gender.gender_name == "Nam"%}
                                                     <input type="checkbox" class="custom-control-input" checked="True"
                                                            id="checkMale">
                                                     {% else %}
@@ -73,7 +86,7 @@
                                             </div>
                                             <div class="col-sm-4">
                                                 <div class="custom-control custom-checkbox small">
-                                                    {% if student_info.gender_id == 2%}
+                                                    {% if current_user.user.gender.gender_name == "Nữ"%}
                                                     <input type="checkbox" class="custom-control-input" checked="true"
                                                            id="checkFemale">
                                                     {% else %}
@@ -84,37 +97,23 @@
                                                     <label class="custom-control-label" for="checkFemale">Female</label>
                                                 </div>
                                             </div>
-                                            <div class="col-sm-4">
-                                                <div style="text-align:left; "
-                                                     class="custom-control custom-checkbox small">
-                                                    {% if student_info.gender_id == 3%}
-                                                    <input type="checkbox" class="custom-control-input" checked="True"
-                                                           id="checkCustom">
-                                                    {% else %}
-                                                    <input type="checkbox" class="custom-control-input"
-                                                           id="checkCustom">
-                                                    {% endif %}
-
-                                                    <label class="custom-control-label" for="checkCustom">Custom</label>
-                                                </div>
-                                            </div>
                                         </div>
                                     </div>
                                     <div class="form-group">
                                         <p style="position: relative; margin-top:-48px; padding-top:7px; padding-bottom:20px; font-size:15px;"
-                                           class="form-control form-control-user">{{ethnics.ethnic_name}}</p>
+                                           class="form-control form-control-user">{{current_user.user.ethnic.ethnic_name}}</p>
                                     </div>
                                     <div class="form-group">
                                         <p style="position: relative; padding-top:7px; padding-bottom:20px; font-size:15px;"
-                                           class="form-control form-control-user">{{national.nationality_name}}</p>
+                                           class="form-control form-control-user">{{current_user.user.nationality.nationality_name}}</p>
                                     </div>
                                     <div class="form-group">
                                         <p style="position: relative; padding-top:7px; padding-bottom:20px; font-size:15px;"
-                                           class="form-control form-control-user">{{student_info.permanent_address}}</p>
+                                           class="form-control form-control-user">{{current_user.user.permanent_address}}</p>
                                     </div>
                                     <div class="form-group">
                                         <p style="position: relative; padding-top:7px; padding-bottom:20px; font-size:15px;"
-                                           class="form-control form-control-user">{{student_info.home_town}}</p>
+                                           class="form-control form-control-user">{{current_user.user.home_town}}</p>
                                     </div>
                                     <div class="form-group">
                                         <p style="position: relative; padding-top:7px; padding-bottom:20px; font-size:15px;"
@@ -125,66 +124,27 @@
 
                             <div class="col-lg-6">
                                 <div class="p-5">
-                                    <div class="form-group">
+                                    {% for field in image_fields %}
+                                    <div class="form-group form-group-element">
                                         <div class="form-control form-control-user"
                                              style="position: relative; padding-top:7px; padding-bottom:20px; font-size:15px;">
                                             <div class="form-group row pb-5">
                                                 <div class="col-sm-9">
-                                                    <p>Học bạ</p>
+                                                    <p>{{ field.field_name}}</p>
                                                 </div>
                                                 <div class="col-sm-3">
                                                     <label>
                                                         Upload
-                                                        <input id="file-input" multiple type="file"
+                                                        <input required id="file-input" name="{{field.id}}" multiple type="file"
                                                                style="visibility: hidden;"/>
                                                     </label>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div id="preview"></div>
-                                    </div>
-                                    <div class="form-group">
-                                        <div class="form-control form-control-user"
-                                             style="position: relative; padding-top:7px; padding-bottom:20px; font-size:15px;">
-                                            <div class="form-group row pb-5">
-                                                <div class="col-sm-9">
-                                                    <p>Bản sao giấy tốt nghiệp</p>
-                                                </div>
-                                                <div class="col-sm-3">
-                                                    <label>
-                                                        Upload
-                                                        <input id="file-input-graduate" multiple type="file"
-                                                               style="visibility: hidden;"/>
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div id="preview-graduate"></div>
-                                    </div>
-                                    <div class="form-group">
-                                        <div class="form-control form-control-user"
-                                             style="position: relative; padding-top:7px; padding-bottom:20px; font-size:15px;">
-                                            <div class="form-group row pb-5">
-                                                <div class="col-sm-9">
-                                                    <p>Bản sao học bạ (pdf)</p>
-                                                </div>
-                                                <div class="col-sm-3">
-                                                    <label>
-                                                        Upload
-                                                        <input style="margin-top:-10px; visibility: hidden; padding-top:-10px"
-                                                               type="file" id="file" multiple
-                                                               onchange="GetFileSizeNameAndType()"/>
-                                                    </label>
-                                                </div>
-                                                <div>
-                                                    <div style="margin-top:-35px;" id="fp"></div>
-                                                    <p>
-                                                    <div style="margin-top:-5px;" id="divTotalSize"></div>
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                        <div id="{{field.id}}" class="preview"></div>
+                                    </div>  
+                                    {% endfor%}
+                                    
                                 </div>
                             </div>
                         </div>
@@ -207,88 +167,55 @@
         </div>
     </form>
 </div>
+<script>
+    var fileInput = document.querySelectorAll('input[type="file"]');
+</script>
+{% if resume_images is defined %}
+<script>
+    document.querySelector('input[type="submit"]').setAttribute('disabled','');
+    let resumeImages = JSON.parse('{{ resume_images | tojson | safe}}');
+    let previewItemList = document.querySelectorAll('.preview'); 
+    for(let i = 0; i < previewItemList.length; i++)
+    {
+        fileInput[i].setAttribute("disabled", "");;
+        let image = new Image();
+        image.height = 100;
+        image.title = previewItemList[i].getAttribute('id');
+        image.src = resumeImages[i][`${previewItemList[i].getAttribute('id')}`];
+        previewItemList[i].appendChild(image);
+    }
+</script>
+{% endif %}
 
 <script>
-function previewImages() {
-    var preview = document.querySelector('#preview');
-
-    if (this.files) {
-        [].forEach.call(this.files, readAndPreview);
-    }
-
-    function readAndPreview(file) {
-        if (!/\.(jpe?g|png|gif)$/i.test(file.name)) {
-            return alert(file.name + " is not an image");
-    } // else...
-
-    var reader = new FileReader();
-
-    reader.addEventListener("load", function() {
-        var image = new Image();
-        image.height = 100;
-        image.title  = file.name;
-        image.src    = this.result;
-        preview.appendChild(image);
-    });
-
-    reader.readAsDataURL(file);
-    }
-}
-
-function previewImagesGraduate() {
-    var preview = document.querySelector('#preview-graduate');
-
-    if (this.files) {
-        [].forEach.call(this.files, readAndPreview);
-    }
-
-    function readAndPreview(file) {
-        if (!/\.(jpe?g|png|gif)$/i.test(file.name)) {
-            return alert(file.name + " is not an image");
-    } // else...
-
-    var reader = new FileReader();
-
-    reader.addEventListener("load", function() {
-        var image = new Image();
-        image.height = 100;
-        image.title  = file.name;
-        image.src    = this.result;
-        preview.appendChild(image);
-    });
-
-    reader.readAsDataURL(file);
-    }
-}
-
-function GetFileSizeNameAndType()
-        {
-        var fi = document.getElementById('file'); // GET THE FILE INPUT AS VARIABLE.
-
-        var totalFileSize = 0;
-
-        // VALIDATE OR CHECK IF ANY FILE IS SELECTED.
-        if (fi.files.length > 0)
-        {
-            // RUN A LOOP TO CHECK EACH SELECTED FILE.
-            for (var i = 0; i <= fi.files.length - 1; i++)
-            {
-                //ACCESS THE SIZE PROPERTY OF THE ITEM OBJECT IN FILES COLLECTION. IN THIS WAY ALSO GET OTHER PROPERTIES LIKE FILENAME AND FILETYPE
-                 var fsize = fi.files.item(i).size;
-                totalFileSize = totalFileSize + fsize;
-                document.getElementById('fp').innerHTML =
-                document.getElementById('fp').innerHTML
-                +
-                '<br /> ' + 'File Name is <b>' + fi.files.item(i).name
-                +
-                '</b> and Size is <b>' + Math.round((fsize / 1024)) //DEFAULT SIZE IS IN BYTES SO WE DIVIDING BY 1024 TO CONVERT IT IN KB
-            }
+    
+    fileInput.forEach(el => el.addEventListener('change', (el) => {
+        let parentElement = el.currentTarget.closest('.form-group-element');
+        let previewItem = parentElement.querySelector('.preview');
+        
+        if(el.currentTarget.files){
+            [].forEach.call(el.currentTarget.files, readAndPreview);
         }
 
-    }
+        function readAndPreview(file) {
+            if (!/\.(jpe?g|png|gif)$/i.test(file.name)) {
+                return alert(file.name + " is not an image");
+            } // else...
 
-document.querySelector('#file-input').addEventListener("change", previewImages);
-document.querySelector('#file-input-graduate').addEventListener("change", previewImagesGraduate);
+            var reader = new FileReader();
+
+            reader.addEventListener("load", function() {
+                var image = new Image();
+                image.height = 100;
+                image.title  = file.name;
+                image.src    = this.result;
+                previewItem.appendChild(image);
+            });
+
+            reader.readAsDataURL(file);
+        }
+
+    }));
 
 
 
