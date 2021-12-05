@@ -39,7 +39,14 @@ class UpdateInfoForm(FlaskForm):
 # 	'fullname': fields.StringField()
 # }
 class TranscriptEntryForm(FlaskForm):
+	# score_type = fields.StringField()
 	score = fields.FloatField()
 
 class TranscriptForm(FlaskForm):
-	transcripts = fields.FieldList(fields.FormField(TranscriptEntryForm), min_entries=1)
+	transcripts = fields.FieldList(fields.FormField(TranscriptEntryForm), min_entries=0)
+
+class ChangePassForm(FlaskForm):
+	o_password = fields.PasswordField(label='Old Password:', validators=[Length(min=8, max=60), DataRequired()])
+	n_password = fields.PasswordField(label='New Password:', validators=[Length(min=8, max=60), DataRequired()])
+	c_password = fields.PasswordField(label='Confirm New Password:', validators=[Length(min=8, max=60), DataRequired()])
+	submit = fields.SubmitField(label='Đổi mật khẩu')

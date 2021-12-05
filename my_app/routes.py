@@ -4,12 +4,15 @@ from my_app.models import *
 from my_app.forms import LoginForm
 from my_app import db
 from flask_login import login_user, logout_user, login_required, current_user
-from my_app import admin
+from my_app import admin, teacher
 
 
 @app.route('/', methods=('GET', 'POST'))
 @app.route('/login', methods=('GET', 'POST'))
 def login_page():
+	if current_user.is_authenticated:
+		logout_user()
+		flash("Phiên đăng nhập của bạn đã kết thúc!!!", category='info')
 	form = LoginForm()
 	if form.validate_on_submit():
 		attempted_user = Account.query.filter_by(username=form.username.data).first()
@@ -20,6 +23,8 @@ def login_page():
 				return redirect(url_for('admin.index'))
 			if attempted_user.is_student():
 				login_user(attempted_user)
+				if current_user.active == 0:
+					return redirect(url_for('_confirmStudent.index'))
 				flash(f'Đăng nhập thành công !!!', category='success')
 				return redirect(url_for('_student.index'))
 			if attempted_user.is_teacher():
@@ -30,6 +35,8 @@ def login_page():
 		else:
 			flash('Tên người dùng hoặc mật khẩu không đúng! Vui lòng thử lại', category='danger')
 	return render_template('login.html', form=form)
+
+
 
 @app.route('/logout')
 def logout():

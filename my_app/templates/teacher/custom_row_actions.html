@@ -1,11 +1,7 @@
 {% macro copy_row(action, row_id, row) %}
-<!-- <form class="icon" method="POST" action="{{ get_url('.copy_view') }}">
-  <input type="hidden" name="row_id" value="{{ get_pk_value(row) }}"/>
-  <button type="submit" title="{{ _gettext('Copy record') }}">
-    <span class="ti ti-pencil"></span>
-  </button>
-</form> -->
+
 <a href="{{get_url('class_details.list_students')}}?cid={{ row.class_info_id }}&teaching-id={{ get_pk_value(row)}}" title="{{ _gettext('Show List Students') }}">
   <span class="ti ti-pencil"></span>
 </a>
 {% endmacro %}
+

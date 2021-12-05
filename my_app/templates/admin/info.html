@@ -16,7 +16,7 @@
 								<th scope="row"></th>
 								{% if current_user.role.name == "Giáo Viên" %}
 								<td><b>Mã giáo viên</b></td>
-								<td>: {{teacher_info.student_code}}</td>
+								<td>: {{teacher.teacher_code}}</td>
 								{% else %}
 								<td><b>User ID</b></td>
 								<td>: {{current_user.user_id}}</td>
@@ -126,7 +126,7 @@
 				</div>
 			</div>
 		</div>
-		<a href="{{url_for('admin_info.edit_view')}}">
+		<a href="{{url_for('.edit_view')}}">
 		<button class="btn btn-primary btn-outline-primary">
 			<i class="icofont icofont-info-square"></i>
 			Cập nhật

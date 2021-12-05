@@ -3,15 +3,25 @@ from my_app.admin import *
 class MyTeacherIndexView(AdminIndexView):
 	@expose('/')
 	def index(self):
-		if not current_user.is_authenticated or current_user.is_teacher == False:
+		if not current_user.is_authenticated or current_user.is_teacher() == False:
 			flash('Please log in first...', category='danger')
 			# next_url = request.url
 			# login_url = '%s?next=%s' % (url_for('login_page'), next_url)
 			return redirect(url_for('login_page'))
+		users = User.query.filter_by(id=current_user.user_id).first()
+		self._template_args["info"] = users
 		return super(MyTeacherIndexView,self).index()
-		
-class TeachingAssignmentView_Teacher(MyBaseView):
-	column_list = ('subject','teacher.user.full_name', 'classInfo', 'semester', 'school_year')
+	
+class MyBaseTeacherView(MyBaseView):
+	def is_accessible(self):
+		return current_user.is_teacher()
+
+	def inaccessible_callback(self, name, **kwargs):
+		flash('Yêu cầu truy cập không khả dụng!! Hãy đăng nhập', category='danger')
+		return redirect(url_for('login_page'))
+
+class TeachingAssignmentView_Teacher(MyBaseTeacherView):
+	column_list = ('subject','teacher.user.full_name', 'class_info', 'semester', 'school_year')
 	# column_extra_row_actions = [
 	# 	EndpointLinkRowAction('ti ti-pencil', '.function'),
 	# ]
@@ -21,7 +31,13 @@ class TeachingAssignmentView_Teacher(MyBaseView):
 	can_edit = False
 	can_delete = False
 	can_create = False
-	
+
+# 	<!-- <form class="icon" method="POST" action="{{ get_url('.copy_view') }}">
+#   <input type="hidden" name="row_id" value="{{ get_pk_value(row) }}"/>
+#   <button type="submit" title="{{ _gettext('Copy record') }}">
+#     <span class="ti ti-pencil"></span>
+#   </button>
+# </form> -->
 	def get_query(self):
 		if current_user.is_teacher:
 			teacher_id = Teacher.query.filter_by(user_id=current_user.user_id).first().id
@@ -33,9 +49,15 @@ class TeachingAssignmentView_Teacher(MyBaseView):
 		return super(TeachingAssignmentView,self).list_view()
 
 
-class StudentInClassView_Teacher(MyBaseView):
+class StudentInClassView_Teacher(MyBaseTeacherView):
+	def is_visible(self):
+		return False
+		
+
 	column_list = ('student','student.user.full_name', 'classInfo', 'classInfo.school_year')
 	can_delete = False
+	can_create = False
+	can_edit = False
 	def get_query(self):
 		cid = False if request.args.get('cid') is None else request.args.get('cid')
 		if cid != False:
@@ -51,11 +73,14 @@ class StudentInClassView_Teacher(MyBaseView):
 		return super(StudentInClassView_Teacher,self).index_view()
 
 
-class SubjectTranscriptView_Teacher(MyBaseView):
+class SubjectTranscriptView_Teacher(MyBaseTeacherView):
+	def is_visible(self):
+		return False
+
 	column_list = ('student','transcript_details')
 	can_delete = False
 	list_template = 'teacher/edit_score.html'
-
+	can_create = False
 
 	def get_query(self):
 		action = False if request.args.get('action') is None else request.args.get('action')
@@ -69,33 +94,108 @@ class SubjectTranscriptView_Teacher(MyBaseView):
 		if field.fieldtype == "float":
 			return fields.FloatField(field.label)
 
+
+	@expose('/class/score/ajax-update', methods=['POST'])
+	def update_score_ajax(self):
+		subject_transcript_id = request.form['pk']
+		score_type_id = request.form['score']
+		value = request.form['value']
+		if subject_transcript_id and score_type_id:
+			if value != '':
+				try:
+					value = round(float(value), 2)
+				except:
+					return Response(
+						json.dumps({"msg": "data invalid"}),
+						status=400,
+						mimetype='application/json'
+					)
+
+				if value < 0 or value > 10:
+					return Response(
+						json.dumps({"msg": "Chỉ nhập vào số từ 0 đến 10"}),
+						status=400,
+						mimetype='application/json'
+					)
+				else:
+					return self.update_score(value, subject_transcript_id, score_type_id)
+			else:
+				value = None
+				return self.update_score(value, subject_transcript_id, score_type_id)
+
+	def update_score(self, value, subject_transcript_id, score_type_id):
+		update = db.session.query(DetailsTranscript).filter_by(transcript_id = subject_transcript_id, score_type_id= score_type_id).first()
+		if update != None:
+			update.score = value
+			update.modified_at = datetime.now()
+			self.session.commit()
+		else:
+			update = DetailsTranscript()
+			update.score_type_id = score_type_id
+			update.transcript_id = subject_transcript_id
+			self.session.add(update)
+			self.session.commit()
+
+		return Response(
+			json.dumps({"msg" : update.transcript_id}),
+			status=200,
+			mimetype='application/json'
+		)
+
+
 	@expose('/class/score')
 	def score_view(self):
-		class DynamicForm(FlaskForm):pass
+		
+		teaching_assignment = TeachingAssignment.query.get(int(request.args.get('teaching-id')))
+		class_info = teaching_assignment.class_info
+		list_students = [(std.student.student_code, std.student.user.full_name) for std in class_info.student_In_Class]
+		students = db.session.query(SubjectTranscript).filter_by(transcript_info_id=int(request.args.get('teaching-id'))).all()
+		lists = []
+		score = self.session.query(ScoreType).all()
 
-		# dform = self.models.Form.objects.get(name='scoreType')
-		score_type = [(type.id, type.score_name) for type in ScoreType.query.all()]
+		for row in students:
+			dictret = dict(row.__dict__)
+			dictret.pop('_sa_instance_state', None)
+			dictret['score'] = [{'id': s.id, 'score_name': s.score_name} for s in score]
+			for s in dictret['score']:
+				check = db.session.query(DetailsTranscript).filter_by(transcript_id = dictret['id'], score_type_id = s['id']).first()
+				if check != None:
+					s['score_value'] = check.score
+			lists.append(dictret)
 
-		for item in score_type:
-			setattr(DynamicForm, str(item[0]), fields.FloatField(item[1]))
-		form = DynamicForm()
-		# score_type = [{"score.label": type.score_name} for type in ScoreType.query.all()]
-		# form = TranscriptForm(transcripts=score_type)
+		score_type = [{"score.label": type.score_name} for type in ScoreType.query.all()]
+
 		action = False if request.args.get('action') is None else request.args.get('action')
 		if action != False and action == 'edit':
-			self._template_args['form'] = form
+			self._template_args['class_info_id'] = class_info.id
+			self._template_args['teaching_id'] = request.args.get('teaching-id')
+			self._template_args['students'] = list_students
+			self._template_args['teaching_assignment'] = teaching_assignment
+			self._template_args['score'] = score
+			self._template_args['lists'] = lists
 			return super(SubjectTranscriptView_Teacher,self).index_view()		
 
-	# def render(self, template, **kwargs):
-	# 	if template == 'teacher/edit_score.html':
-	# 		kwargs['summary_data'] = [
-	# 			{'title': 'Page Total', 'name': None, 'cost': '1000'},
-	# 			{'title': 'Grand Total', 'name': None, 'cost': '2000'},
-	# 		]
-	# 	return super(SubjectTranscriptView_Teacher, self).render(template, **kwargs)
+class PersonalInfoView_Teacher(PersonalInfoView):
+	def is_accessible(self):
+		return current_user.is_teacher()
 
+	def inaccessible_callback(self, name, **kwargs):
+		flash('Yêu cầu truy cập không khả dụng!! Hãy đăng nhập', category='danger')
+		return redirect(url_for('login_page'))
+
+	def render(self, template, **kwargs):
+		teacher = Teacher.query.filter_by(user_id=current_user.user_id).first()
+		kwargs['teacher'] = teacher
+		return super(PersonalInfoView_Teacher, self).render(template, **kwargs)
+
+class ChangePasswordView_Teacher(ChangePasswordView):
+	@expose('/', methods=['GET','POST'])
+	def index(self):
+		return super(ChangePasswordView_Teacher, self).index()
 
 teacher = Admin(app, name='Teacher', index_view=MyTeacherIndexView(url='/teacher', endpoint='_teacher'), base_template='master.html', template_mode='bootstrap4', url='/teacher', endpoint='_teacher')
+teacher.add_view(PersonalInfoView_Teacher(MoreInfo, db.session, name="Thông tin cá nhân", url='/teacher/info', endpoint='teacher_info'))
 teacher.add_view(TeachingAssignmentView_Teacher(TeachingAssignment, db.session, name='Danh sách lớp giảng dạy', url='/teacher/list-class',endpoint='teacher_assignment'))
 teacher.add_view(StudentInClassView_Teacher(StudentInClass, db.session, name='Danh sách học sinh', url='/teacher/list-class', endpoint='class_details'))
 teacher.add_view(SubjectTranscriptView_Teacher(SubjectTranscript, db.session, name='Nhập điểm', url='/teacher/list-class', endpoint='score'))
+teacher.add_view(ChangePasswordView_Teacher(name="Đổi mật khẩu", url="/teacher/change-password", endpoint='_changePasswordTeacher'))
