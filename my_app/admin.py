@@ -7,6 +7,7 @@ from my_app.my_base_view import MyBaseView
 class MyAdminIndexView(AdminIndexView):
 	def is_visible(self):
 		return False
+
 	@expose('/')
 	def index(self):
 		if not current_user.is_authenticated or current_user.is_admin() == False:
@@ -423,67 +424,13 @@ class ChangePasswordView(BaseView):
 						return redirect(url_for('_teacher.index'))
 					if attempted_user.is_student():
 						return redirect(url_for('_student.index'))
+					if attempted_user.is_edu_office():
+						return redirect(url_for('_edu_office.index'))						
 				else:
 					flash(f'Mật khẩu xác thực không trùng khớp!!!', category='danger')
 			else:
 				flash(f'Mật khẩu không đúng!!!', category='danger')
 		return self.render('admin/change_password.html', form=form)
-
-
-		# if not current_user.is_authenticated:
-		# 	flash('Please log in first...', category='danger')
-		# 	# next_url = request.url
-		# 	# login_url = '%s?next=%s' % (url_for('login_page'), next_url)
-		# 	return redirect(url_for('login_page'))
-		# if current_user.is_admin():	
-		# 	return self.render('admin/info.html')
-		# if current_user.is_student():
-		# 	return self.render('student/info.html')
-
-# 	def is_accessible(self):
-# 		return current_user.is_authenticated
-
-# 	def inaccessible_callback(self, name, **kwargs):
-# 		flash('Yêu cầu truy cập không khả dụng!! Hãy đăng nhập', category='danger')
-# 		return redirect(url_for('login_page'))	
-
-# 	@expose('/edit', methods=['GET','POST'])
-# 	def edit(self):
-# 		update_info_form = UpdateInfoForm()
-# 		if request.method == "POST":
-# 		# if update_info_form.validate_on_submit():
-# 			more_info = MoreInfo.query.filter_by(user_id=current_user.user_id).first()
-# 			if more_info is not None:
-# 				more_info.email = update_info_form.u_email.data
-# 				more_info.phone = update_info_form.u_phone.data
-# 				more_info.current_residence = update_info_form.u_residence.data
-# 				more_info.note = update_info_form.note.data
-# 			else: 
-# 				more_info = MoreInfo(user_id=current_user.user_id,email=update_info_form.u_email.data,phone=update_info_form.u_phone.data,current_residence=update_info_form.u_residence.data,note=update_info_form.note.data,modified_at=datetime.now())
-# 				db.session.add(more_info)
-			
-# 			if current_user.role.name == "Học sinh":
-# 				student_to_update = Student.query.filter_by(user_id=current_user.user_id).first()
-# 				family_info = FamilyInfo(student_id=student_to_update.id, full_name=update_info_form.contact_name.data, phone=update_info_form.contact_phone.data, current_residence=update_info_form.contact_residence.data, modified_at=datetime.now())
-# 				db.session.add(family_info)
-# 			db.session.commit()
-
-# 			return redirect(url_for('admin_info.index'))
-# 		more_info = MoreInfo.query.filter_by(user_id=current_user.user_id)
-# 		return self.render('admin/edit_info.html', update_info_form=update_info_form, more_info=more_info)
-
-# 	def render(self, template, **kwargs):
-# 		more_info = MoreInfo.query.get(current_user.user_id)
-# 		if current_user.role.name == "Học Sinh":
-# 			student = Student.query.filter_by(user_id=current_user.user_id).first()
-# 			family_info = FamilyInfo.query.filter_by(student_id=student.id).first()
-# 			if family_info is not None:
-# 				kwargs['family_info'] = family_info
-# 			kwargs['student'] = student	
-# 		if more_info is not None:
-# 			kwargs['more_info'] = more_info
-
-# 		return super(PersonalInfoView, self).render(template, **kwargs)
 
 
 class TeachingAssignmentView(MyBaseView):
@@ -526,9 +473,6 @@ class TeachingAssignmentView(MyBaseView):
 		return dicti
 
 
-	# def create_subject_transcript(self,model):
-	# 	model = SubjectTranscript()
-
 	def after_model_change(self, form, model, is_created):
 		if is_created:
 			for std in model.class_info.student_In_Class:
@@ -566,7 +510,7 @@ admin.add_view(EducationalOfficeView(EducationalOffice, db.session, name="Phòng
 
 admin.add_view(MyBaseView(Class, db.session, category="Quản lý lớp học", name="Thông tin lớp học"))
 admin.add_view(ClassInfoView(ClassInfo, db.session, category="Quản lý lớp học", name="Danh sách lớp học trong năm"))
-admin.add_view(TeachingAssignmentView(TeachingAssignment, db.session, category="Quản lý lớp học",name="Phân công giảng dạy"))
+admin.add_view(TeachingAssignmentView(TeachingAssignment, db.session, category="Quản lý lớp học",name="Phân công giảng dạy", menu_icon_type="ti", menu_icon_value="ti-briefcase"))
 admin.add_view(StudentInClassView(StudentInClass, db.session, category="Quản lý lớp học", name="Phân lớp"))
 
 admin.add_view(MyBaseView(Subject, db.session, name="Quản lý môn học", menu_icon_type="ti", menu_icon_value="ti-book"))

@@ -1,6 +1,9 @@
 from my_app.admin import *
 
 class MyTeacherIndexView(AdminIndexView):
+	def is_visible(self):
+		return False
+
 	@expose('/')
 	def index(self):
 		if not current_user.is_authenticated or current_user.is_teacher() == False:
@@ -10,7 +13,8 @@ class MyTeacherIndexView(AdminIndexView):
 			return redirect(url_for('login_page'))
 		users = User.query.filter_by(id=current_user.user_id).first()
 		self._template_args["info"] = users
-		return super(MyTeacherIndexView,self).index()
+		return redirect(url_for('teacher_assignment.index_view'))
+		# return super(MyTeacherIndexView,self).index()
 	
 class MyBaseTeacherView(MyBaseView):
 	def is_accessible(self):
@@ -233,8 +237,8 @@ class ChangePasswordView_Teacher(ChangePasswordView):
 		return super(ChangePasswordView_Teacher, self).index()
 
 teacher = Admin(app, name='Teacher', index_view=MyTeacherIndexView(url='/teacher', endpoint='_teacher'), base_template='master.html', template_mode='bootstrap4', url='/teacher', endpoint='_teacher')
+teacher.add_view(TeachingAssignmentView_Teacher(TeachingAssignment, db.session, name='Danh sách lớp giảng dạy', url='/teacher/list-class',endpoint='teacher_assignment', menu_icon_type="ti", menu_icon_value="ti-briefcase"))
 teacher.add_view(PersonalInfoView_Teacher(MoreInfo, db.session, name="Thông tin cá nhân", url='/teacher/info', endpoint='teacher_info', menu_icon_type="ti", menu_icon_value="ti-pencil"))
-teacher.add_view(TeachingAssignmentView_Teacher(TeachingAssignment, db.session, name='Danh sách lớp giảng dạy', url='/teacher/list-class',endpoint='teacher_assignment'))
 teacher.add_view(StudentInClassView_Teacher(StudentInClass, db.session, name='Danh sách học sinh', url='/teacher/list-class', endpoint='class_details'))
 teacher.add_view(SubjectTranscriptView_Teacher(SubjectTranscript, db.session, name='Nhập điểm', url='/teacher/list-class', endpoint='score'))
 teacher.add_view(ChangePasswordView_Teacher(name="Đổi mật khẩu", url="/teacher/change-password", endpoint='_changePasswordTeacher'))
