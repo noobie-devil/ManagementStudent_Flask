@@ -31,6 +31,10 @@ def login_page():
 				login_user(attempted_user)
 				flash(f'Đăng nhập thành công !!!', category='success')
 				return redirect(url_for('_teacher.index'))
+			if attempted_user.is_edu_office():
+				login_user(attempted_user)
+				flash(f'Đăng nhập thành công !!!', category='success')
+				return redirect(url_for('_edu_office.index'))
 			session.permanent = True
 		else:
 			flash('Tên người dùng hoặc mật khẩu không đúng! Vui lòng thử lại', category='danger')

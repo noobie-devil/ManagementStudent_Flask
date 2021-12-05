@@ -1,15 +1,19 @@
 from my_app.common import *
 from flask import Markup
+from my_app.my_base_view import MyBaseView
 
 class MyAdminIndexView(AdminIndexView):
+	def is_visible(self):
+		return False
 	@expose('/')
 	def index(self):
-		# if not current_user.is_authenticated or current_user.is_admin == False:
-		# 	flash('Please log in first...', category='danger')
-		# 	# next_url = request.url
-		# 	# login_url = '%s?next=%s' % (url_for('login_page'), next_url)
-		# 	return redirect(url_for('login_page'))
-		return super(MyAdminIndexView,self).index()
+		if not current_user.is_authenticated or current_user.is_admin() == False:
+			flash('Please log in first...', category='danger')
+			# next_url = request.url
+			# login_url = '%s?next=%s' % (url_for('login_page'), next_url)
+			return redirect(url_for('login_page'))
+		return redirect(url_for('admin_index.index'))
+		
 
 user_form = {
 	'user_id' : fields.HiddenField(label='user_id'),
@@ -39,71 +43,18 @@ def create_user(form, role):
 	return user_to_create
 
 
-class MyBaseView(ModelView):
+class IndexView(MyBaseView):
+	can_create = False
+	can_delete = False
+	can_edit = False
+	column_searchable_list = ['full_name']
 
-	# def is_accessible(self):
-	# 	return current_user.is_authenticated
+	column_list = ('id','role','full_name', 'gender', 'birthdate','permanent_address', 'home_town', 'ethnic', 'nationality', 'image', 'created_at')
 
-	# def inaccessible_callback(self, name, **kwargs):
-	# 	flash('Yêu cầu truy cập không khả dụng!! Hãy đăng nhập', category='danger')
-	# 	return redirect(url_for('login_page'))
 
-	form_excluded_columns = ('created_at','modified_at', 'teachingAssignment', 'schoolYear', 'detailsTranscript', 'class')
-
-	list_template = 'admin/list.html'
-	column_labels = {
-		'user.image': 'Hình ảnh',
-		'teacher_code': 'Mã GV',
-		'student_code': 'Mã HS',
-		'subject': 'Môn  phụ trách',
-		'classInfo': 'Lớp',
-		'semester': 'Học kỳ',
-		'user.full_name': 'Họ và tên',
-		'user.gender': 'Giới tính',
-		'user.role': 'Role',
-		'user.birthdate': 'Ngày sinh',
-		'user.ethnic': 'Dân tộc',
-		'user.nationality': 'Quốc tịch',
-		'user.permanent_address': 'Địa chỉ thường trú',
-		'user.home_town': 'Quê quán',
-		'class_name': 'Lớp',
-		'created_at': 'Ngày tạo',
-		'semester_name': 'Tên học kỳ',
-		'year': 'Năm học',
-		'gender_name': 'Giới tính',
-		'nationality_name': 'Quốc tịch',
-		'ethnic_name': 'Dân tộc',
-		'score_name': 'Cột điểm',
-		'multiplier': 'Hệ số',
-		'course.course_name': 'Khóa',
-		'course.time': 'Niên khóa',
-		'course': 'Khóa',
-		'course_name': 'Khóa',
-		'start_year': 'Năm bắt đầu',
-		'end_year': 'Năm kết thúc',
-		'grade_name': 'Khối',
-		'grade': 'Khối',
-		'subject_name': 'Môn học',
-		'letter_point': 'Điểm chữ',
-		'in_class.class_name': 'Lớp',
-		'school_year': 'Năm học',
-		'amount_std': 'Sĩ số',
-		'teacher.user.full_name': 'Giáo Viên',
-		'semester.semester_name': 'Học kỳ',
-		'student.user.full_name': 'Họ tên',
-		'classInfo.school_year' : 'Năm học',
-		'student' : 'Mã HS'
-
-	}
-	form_widget_args = {
-        'student_code': {
-            'readonly': True
-        },
-        'teacher_code': {
-            'readonly': True
-        },
-    }
-
+	@expose('/')
+	def index(self):
+		return super(IndexView,self).index_view()
 
 class CourseView(MyBaseView):
 	form_excluded_columns = ('time','student')
@@ -129,8 +80,8 @@ class UserView(MyBaseView):
 	column_formatters = {
 		'user.image': _image_formatter
 	}
-	details_modal = True
-	can_view_details = True
+	# details_modal = True
+	# can_view_details = True
 	column_searchable_list = ['user.full_name']
 
 	def on_form_prefill(self,form, id):
@@ -162,15 +113,66 @@ class UserView(MyBaseView):
 	def on_model_change(self, form, model, is_created):
 		image = request.files['image']
 		if image.filename != '':
-			if is_created == False and model.user.image_id != None:
-				cloudinary.uploader.destroy(model.user.image_id, invalidate=True)
-			info = cloudinary.uploader.upload(image)
-			model.user.image = info['secure_url']
-			model.user.image_id = info['public_id']
-
+			if is_created == False:
+				if model.user.image_id != None:
+					cloudinary.uploader.destroy(model.user.image_id, invalidate=True)
+				info = cloudinary.uploader.upload(image)
+				model.user.image = info['secure_url']
+				model.user.image_id = info['public_id']
+			
 		if is_created and form.user_id:
 			model.user_id = form.user_id
+			
+	def after_model_change(self, form, model, is_created):
+		image = request.files['image']
+		if is_created:
+			if image.filename != '':
+				user = User.query.filter_by(id=model.user_id).first()
+				info = cloudinary.uploader.upload(image)
+				user.image = info['secure_url']
+				user.image_id = info['public_id']
+				try:
+					self.session.commit()
+				except Exception as ex:
+					self.session.rollback()
 
+	def delete_model(self, model):
+		
+		try:
+			account = self.session.query(Account).filter_by(user_id=model.user.id).first()
+			if account != None:
+				self.session.flush()
+				self.session.delete(account)
+				self.session.commit()
+			user_info = self.session.query(MoreInfo).filter_by(user_id=model.user.id).first()
+			if user_info != None:
+				self.session.flush()
+				self.session.delete(account)
+				self.session.commit()
+			user = self.session.query(User).filter_by(id=model.user.id).first()
+			if user != None:
+				self.session.flush()
+				self.session.delete(user)
+				self.session.commit()
+			get_image = model.user.image_id
+			self.on_model_delete(model)
+			self.session.flush()
+			self.session.delete(model)
+			self.session.commit()
+			if get_image != None:
+				cloudinary.uploader.destroy(get_image, invalidate=True)
+		except Exception as ex:
+			if not self.handle_view_exception(ex):
+				flash(gettext('Failed to delete record. %(error)s', error=str(ex)), 'error')
+				log.exception('Failed to delete record.')
+
+			self.session.rollback()
+
+			return False
+		else:
+			self.after_model_delete(model)
+
+		return True
 
 class AdminView(UserView):
 	form_excluded_columns = ('user', 'created_at')
@@ -184,6 +186,24 @@ class AdminView(UserView):
 		form.user_id = user_to_create.id
 		return super(AdminView,self).create_model(form)
 
+	def after_model_change(self, form, model, is_created):
+		if is_created:
+			auto_create_account = Account()
+			max_id = db.session.query(func.max(Administrator.id)).scalar()
+			if max_id is None:
+				auto_create_account.username = 'admin' + '{:0>3}'.format(1)
+			else:
+				if max_id != False:
+					auto_create_account.username = 'admin' + '{:0>3}'.format(max_id+1)
+			auto_create_account.user_id = model.user_id
+			auto_create_account.password = '123456789'
+			auto_create_account.role_id = model.user.role_id
+			try:
+				self.session.add(auto_create_account)
+				self.session.commit()
+			except Exception as ex:
+				self.session.rollback()
+			return super(AdminView,self).after_model_change(form,model,is_created)
 
 
 class EducationalOfficeView(UserView):
@@ -198,6 +218,24 @@ class EducationalOfficeView(UserView):
 		form.user_id = user_to_create.id
 		return super(EducationalOfficeView,self).create_model(form)
 
+	def after_model_change(self, form, model, is_created):
+		if is_created:
+			auto_create_account = Account()
+			max_id = db.session.query(func.max(EducationalOffice.id)).scalar()
+			if max_id is None:
+				auto_create_account.username = 'PGV' + '{:0>3}'.format(1)
+			else:
+				if max_id != False:
+					auto_create_account.username = 'PGV' + '{:0>3}'.format(max_id+1)
+			auto_create_account.user_id = model.user_id
+			auto_create_account.password = '123456789'
+			auto_create_account.role_id = model.user.role_id
+			try:
+				self.session.add(auto_create_account)
+				self.session.commit()
+			except Exception as ex:
+				self.session.rollback()
+			return super(EducationalOfficeView,self).after_model_change(form,model,is_created)
 
 class StudentView(UserView):
 	form_excluded_columns = ('user', 'created_at','family_info', 'familyInfo','studentInClass','subjectTranscript')
@@ -232,12 +270,14 @@ class StudentView(UserView):
 			auto_create_account.user_id = model.user_id
 			auto_create_account.username = form.student_code.data
 			auto_create_account.password = form.student_code.data[-4:] + '' + Course.query.filter_by(id=model.course_id).first().start_year
+			auto_create_account.active = False
 			auto_create_account.role_id = model.user.role_id
 			try:
 				self.session.add(auto_create_account)
 				self.session.commit()
 			except Exception as ex:
 				self.session.rollback()
+			return super(StudentView,self).after_model_change(form,model,is_created)
 
 	# def get_create_form(self):
 	# 	form = super(StudentView, self).get_create_form()
@@ -278,6 +318,20 @@ class TeacherView(UserView):
 		form.user_id = user_to_create.id
 		return super(TeacherView,self).create_model(form)
 
+	def after_model_change(self, form, model, is_created):
+		if is_created:
+			auto_create_account = Account()
+			auto_create_account.user_id = model.user_id
+			auto_create_account.username = form.teacher_code.data
+			auto_create_account.password = '123456789'
+			auto_create_account.role_id = model.user.role_id
+			try:
+				self.session.add(auto_create_account)
+				self.session.commit()
+			except Exception as ex:
+				self.session.rollback()
+			return super(TeacherView,self).after_model_change(form,model,is_created)
+
 def get_all_school_year():
     year = SchoolYear.query.all()
     return [(school_year.id, school_year.year) for school_year in year]
@@ -301,7 +355,7 @@ class ClassInfoView(MyBaseView):
 
 class AccountView(MyBaseView):
     # column_exclude_list = ['password']
-    column_list = ('id','username', 'password_hash', 'active', 'created_at' )
+    column_list = ('user.full_name','username', 'password_hash', 'active', 'created_at' )
     column_labels = dict(password_hash='Password Hashed', created_at='Ngày tạo')
     form_columns = ('user','username','password', 'role', 'active')
     form_extra_fields = {
@@ -312,19 +366,6 @@ class AccountView(MyBaseView):
         	Account.password = form.password.data
 
 class PersonalInfoView(MyBaseView):
-
-	# def edit_form(self):
-	# 	form = UpdateInfoForm()
-	# 	return form
-
-	# def update_model(self, form, model):
-	# 	info_update = self.session.query(MoreInfo).get(current_user.user_id)
-	# 	info_update.email= form.u_email.data
-	# 	info_update.phone= form.u_phone.data
-	# 	info_update.current_residence= form.u_residence.data
-	# 	info_update.note= form.note.data
-	# 	db.session.commit()
-	# 	return redirect(url_for('admin_info.info_view'))
 
 	list_template = 'admin/info.html'
 
@@ -359,66 +400,9 @@ class PersonalInfoView(MyBaseView):
 			kwargs['more_info'] = more_info
 		return super(PersonalInfoView, self).render(template, **kwargs)
 
-# class PersonalInfoView(BaseView):
-# 	@expose('/')
-# 	def index(self):
-# 		if not current_user.is_authenticated:
-# 			flash('Please log in first...', category='danger')
-# 			# next_url = request.url
-# 			# login_url = '%s?next=%s' % (url_for('login_page'), next_url)
-# 			return redirect(url_for('login_page'))
-# 		if current_user.is_admin():	
-# 			return self.render('admin/info.html')
-# 		if current_user.is_student():
-# 			return self.render('student/info.html')
-
-# 	def is_accessible(self):
-# 		return current_user.is_authenticated
-
-# 	def inaccessible_callback(self, name, **kwargs):
-# 		flash('Yêu cầu truy cập không khả dụng!! Hãy đăng nhập', category='danger')
-# 		return redirect(url_for('login_page'))	
-
-# 	@expose('/edit', methods=['GET','POST'])
-# 	def edit(self):
-# 		update_info_form = UpdateInfoForm()
-# 		if request.method == "POST":
-# 		# if update_info_form.validate_on_submit():
-# 			more_info = MoreInfo.query.filter_by(user_id=current_user.user_id).first()
-# 			if more_info is not None:
-# 				more_info.email = update_info_form.u_email.data
-# 				more_info.phone = update_info_form.u_phone.data
-# 				more_info.current_residence = update_info_form.u_residence.data
-# 				more_info.note = update_info_form.note.data
-# 			else: 
-# 				more_info = MoreInfo(user_id=current_user.user_id,email=update_info_form.u_email.data,phone=update_info_form.u_phone.data,current_residence=update_info_form.u_residence.data,note=update_info_form.note.data,modified_at=datetime.now())
-# 				db.session.add(more_info)
-			
-# 			if current_user.role.name == "Học sinh":
-# 				student_to_update = Student.query.filter_by(user_id=current_user.user_id).first()
-# 				family_info = FamilyInfo(student_id=student_to_update.id, full_name=update_info_form.contact_name.data, phone=update_info_form.contact_phone.data, current_residence=update_info_form.contact_residence.data, modified_at=datetime.now())
-# 				db.session.add(family_info)
-# 			db.session.commit()
-
-# 			return redirect(url_for('admin_info.index'))
-# 		more_info = MoreInfo.query.filter_by(user_id=current_user.user_id)
-# 		return self.render('admin/edit_info.html', update_info_form=update_info_form, more_info=more_info)
-
-# 	def render(self, template, **kwargs):
-# 		more_info = MoreInfo.query.get(current_user.user_id)
-# 		if current_user.role.name == "Học Sinh":
-# 			student = Student.query.filter_by(user_id=current_user.user_id).first()
-# 			family_info = FamilyInfo.query.filter_by(student_id=student.id).first()
-# 			if family_info is not None:
-# 				kwargs['family_info'] = family_info
-# 			kwargs['student'] = student	
-# 		if more_info is not None:
-# 			kwargs['more_info'] = more_info
-
-# 		return super(PersonalInfoView, self).render(template, **kwargs)
 
 class TeachingAssignmentView(MyBaseView):
-	column_list = ('subject','teacher.user.full_name', 'classInfo', 'semester', 'school_year')
+	column_list = ('subject','teacher.user.full_name', 'class_info', 'semester', 'school_year')
 	form_excluded_columns = 'semester, transcript_info'
 	# create_template = 'admin/create_teaching_assignment.html'
 
@@ -442,12 +426,7 @@ class TeachingAssignmentView(MyBaseView):
 				self.session.add(model)
 				self.session.commit()
 				dicti.append(model)
-				# temp = model
-				# model.semester_id = semester.id
-				# dicti.append(temp)
-				# self.session.add(model)
-				# self._on_model_change(form, temp, True)
-			# self.session.commit()
+				
 			except Exception as ex:
 				if not self.handle_view_exception(ex):
 					flash(gettext('Failed to create record. %(error)s', error=str(ex)), 'error')
@@ -460,6 +439,7 @@ class TeachingAssignmentView(MyBaseView):
 				self.after_model_change(form, model, True)
 
 		return dicti
+
 
 	# def create_subject_transcript(self,model):
 	# 	model = SubjectTranscript()
@@ -484,16 +464,14 @@ class StudentInClassView(MyBaseView):
 			self.session.commit()
 
 admin = Admin(app, name='UTE', index_view=MyAdminIndexView(), base_template='master.html', template_mode='bootstrap4')
+admin.add_view(IndexView(User, db.session, name='Trang Chủ', url='/index-admin', endpoint='admin_index', menu_icon_type="ti", menu_icon_value="ti-home"))
 
-admin.add_view(PersonalInfoView(MoreInfo, db.session, name="Thông tin cá nhân", url='/admin/info', endpoint='admin_info'))
+admin.add_view(PersonalInfoView(MoreInfo, db.session, name="Thông tin cá nhân", url='/admin/info', endpoint='admin_info', menu_icon_type="ti", menu_icon_value="ti-pencil"))
 admin.add_view(AccountView(Account, db.session, category="Quản lý tài khoản", name="Tài khoản"))
-admin.add_view(MyBaseView(User, db.session, category="Quản lý tài khoản", name="Người dùng"))
 admin.add_view(MyBaseView(Role, db.session, category="Quản lý tài khoản", name="Thông tin quyền"))
-admin.add_view(MyBaseView(MoreInfo, db.session, category="Quản lý tài khoản", name="Thông tin mở rộng"))
+admin.add_view(MyBaseView(MoreInfo, db.session, name="Danh sách liên hệ", menu_icon_type="ti", menu_icon_value="ti-id-badge"))
 
-admin.add_view(StudentView(Student, db.session, category="Quản lý học sinh", name="Chỉnh sửa"))
-# admin.add_view(MyBaseView(FamilyMember, db.session, category="Quản lý học sinh",name="Thành phần gia đình"))
-
+admin.add_view(StudentView(Student, db.session, name="Quản lý học sinh",  menu_icon_type="ti", menu_icon_value="ti-user"))
 
 admin.add_view(TeacherView(Teacher, db.session, name="Giáo viên", menu_icon_type="ti", menu_icon_value="ti-user"))
 
@@ -504,14 +482,17 @@ admin.add_view(EducationalOfficeView(EducationalOffice, db.session, name="Phòng
 admin.add_view(MyBaseView(Class, db.session, category="Quản lý lớp học", name="Thông tin lớp học"))
 admin.add_view(ClassInfoView(ClassInfo, db.session, category="Quản lý lớp học", name="Danh sách lớp học trong năm"))
 admin.add_view(TeachingAssignmentView(TeachingAssignment, db.session, category="Quản lý lớp học",name="Phân công giảng dạy"))
+admin.add_view(StudentInClassView(StudentInClass, db.session, category="Quản lý lớp học", name="Phân lớp"))
 
 admin.add_view(MyBaseView(Subject, db.session, name="Quản lý môn học", menu_icon_type="ti", menu_icon_value="ti-book"))
 
 admin.add_view(MyBaseView(ScoreType, db.session, category="Quản lý điểm", name="Thông tin bảng điểm"))
 admin.add_view(MyBaseView(SubjectTranscript, db.session, category="Quản lý điểm", name="Điểm theo môn học"))
-admin.add_view(StudentInClassView(StudentInClass, db.session, category="Quản lý điểm", name="Chỉnh sửa điểm học sinh"))
 
-admin.add_view(MyBaseView(Semester, db.session, name="Học kỳ"))
+
+admin.add_view(MyBaseView(ResumeImageFields, db.session, name="Form hồ sơ nhập học", menu_icon_type="ti", menu_icon_value="ti-write"))
+
+admin.add_view(MyBaseView(Semester, db.session, name="Học kỳ", menu_icon_type="ti", menu_icon_value="ti-notepad"))
 
 admin.add_view(MyBaseView(SchoolYear, db.session, category='Năm học', name="Chỉnh sửa năm học", menu_icon_type="ti", menu_icon_value="ti-calendar"))
 admin.add_view(CourseView(Course, db.session, category='Năm học', name="Chỉnh sửa niên khóa", menu_icon_type="ti", menu_icon_value="ti-calendar"))
