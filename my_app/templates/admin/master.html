@@ -108,9 +108,7 @@
                         {% block brand %}
                         <a class="navbar-brand brand-logo" href="{{ admin_view.admin.url }}">{{ admin_view.admin.name }}</a>
                         {% endblock %}
-                        <a href="index.html">
-                            <img class="img-fluid" src="assets/images/logo.png" alt="Theme-Logo" />
-                        </a>
+                        
                         <a class="mobile-options">
                             <i class="ti-more"></i>
                         </a>
@@ -153,34 +151,29 @@
                             </li>
                             <li class="user-profile header-notification">
                                 <a href="#!">
-                                    <img src="/static/assets/images/face_admin.jpg" class="img-radius" alt="User-Profile-Image">
-                                    <span>full_name</span>
+                                    {% if current_user.user.image %}
+                                    <img src="{{current_user.user.image}}" class="img-radius" alt="User-Profile-Image">
+                                    {% else %}
+                                    <img src="/static/assets/images/images.png" class="img-radius" alt="User-Profile-Image">
+                                    {% endif %}
+                                    
+                                    <span>{{current_user.user.full_name}}</span>
                                     <i class="ti-angle-down"></i>
                                 </a>
                                 <ul class="show-notification profile-notification">
                                     <li>
                                         <a href="#!">
-                                            <i class="ti-settings"></i> Settings
+                                            <i class="ti-settings"></i> Cài đặt
                                         </a>
                                     </li>
                                     <li>
-                                        <a href="#">
-                                            <i class="ti-user"></i> Profile
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="#">
-                                            <i class="ti-email"></i> My Messages
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="#">
-                                            <i class="ti-lock"></i> Lock Screen
+                                        <a href="{{request.url + 'info'}}">
+                                            <i class="ti-user"></i> Thông tin cá nhân
                                         </a>
                                     </li>
                                     <li>
                                         <a href="{{ url_for('logout') }}">
-                                            <i class="ti-layout-sidebar-left"></i> Logout
+                                            <i class="ti-layout-sidebar-left"></i> Đăng xuất
                                         </a>
                                     </li>
                                 </ul>
@@ -196,10 +189,14 @@
                         <div class="pcoded-inner-navbar main-menu">
                             <div class="">
                                 <div class="main-menu-header">
-                                    <img class="img-40 img-radius" src="/static/assets/images/face_admin.jpg" alt="User-Profile-Image">
+                                    {% if current_user.user.image %}
+                                    <img class="img-40 img-radius" src="{{current_user.user.image}}" alt="User-Profile-Image">
+                                    {% else %}
+                                    <img class="img-40 img-radius" src="/static/assets/images/images.png" alt="User-Profile-Image">
+                                    {% endif %}
                                     <div class="user-details">
-                                        <span>Name</span>
-                                        <span class="text-center">Role</span>
+                                        <span>{{current_user.user.full_name}}</span>
+                                        <span class="text-center">{{current_user.user.role.name}}</span>
                                         <span id="more-details"><i class="ti-angle-down"></i></span>
                                     </div>
                                 </div>
@@ -207,9 +204,9 @@
                                 <div class="main-menu-content">
                                     <ul>
                                         <li class="more-details">
-                                            <a href="#"><i class="ti-user"></i>View Profile</a>
+                                            <a href="{{request.url + 'info'}}"><i class="ti-user"></i>Thông tin cá nhân</a>
                                             <a href="#!"><i class="ti-settings"></i>Settings</a>
-                                            <a href="{{ url_for('logout') }}"><i class="ti-layout-sidebar-left"></i>Logout</a>
+                                            <a href="{{ url_for('logout') }}"><i class="ti-layout-sidebar-left"></i>Đăng xuất</a>
                                         </li>
                                     </ul>
                                 </div>
@@ -285,7 +282,7 @@
 <!-- Todo js -->
 <script type="text/javascript " src="/static/assets/pages/todo/todo.js "></script>
 <!-- Custom js -->
-<script type="text/javascript" src="/static/assets/pages/dashboard/custom-dashboard.js"></script>
+<!-- <script type="text/javascript" src="/static/assets/pages/dashboard/custom-dashboard.js"></script> -->
 <script type="text/javascript" src="/static/assets/js/script.js"></script>
 <script type="text/javascript" src="/static/assets/js/SmoothScroll.js"></script>
 <script type="text/javascript" src="/static/assets/js/pcoded.min.js"></script>

@@ -141,9 +141,13 @@ class Account(db.Model, UserMixin):
 
 	def is_teacher(self):
 		return self.role.name == self.user.role.name == "Giáo Viên"
+
+	def is_edu_office(self):
+		return self.role.name == self.user.role.name == 'Giáo vụ'
+
 	def is_active(self):
 		return self.active
-	
+
 	def get_id(self):
 		try:
 			return text_type(self.user_id)
@@ -303,11 +307,37 @@ class InputScoreTime(db.Model):
 	id = db.Column(db.Integer(), primary_key=True, autoincrement=True)
 	start_date = db.Column(db.DateTime(), nullable=False,unique=True)
 	end_date = db.Column(db.DateTime(), nullable=False, unique=True)
-	status = db.relationship('InputScoreStatus', backref='inputScoreStatus', lazy=False, uselist=False)
-class InputScoreStatus(db.Model):
-	__tablename__ = 'inputScoreStatus'
-	time_id = db.Column(db.Integer(), db.ForeignKey('inputScoreTime.id'), primary_key=True)
-	status = db.Column(db.Boolean(), nullable=False)
+	status = db.Column(db.Boolean(), nullable=False, default=False)
+
+# --------------------------------------------------------------------------
+# ------------------------FOR CONFIRM AND SUBMIT RESUME-----------------------
+
+class ResumeImageFields(db.Model):
+	__tablename__ = 'resumeImageFields'
+	id = db.Column(db.Integer(), primary_key=True, autoincrement=True)
+	field_name = db.Column(db.String(length=100), nullable=False, unique=True) 
+	role_id = db.Column(db.Integer, db.ForeignKey('role.id', ondelete='SET NULL'), nullable=True)
+	role = db.relationship('Role', backref='resumeImageFields', lazy=False)
+
+class Resume(db.Model):
+	__tablename__ = 'resume'
+	id = db.Column(db.Integer(), primary_key=True, autoincrement=True)
+	user_id = db.Column(db.Integer(), db.ForeignKey('user.id', ondelete='SET NULL'), nullable=True)
+	user = db.relationship('User', backref='resume', lazy=False)
+	uploaded_at = db.Column(db.DateTime, nullable=False, default=datetime.now())
+	modified_at = db.Column(db.DateTime, nullable=True, default=datetime.now())
+	submitted_at = db.Column(db.DateTime, nullable=False, default=datetime.now())
+
+class ResumeImageStorage(db.Model):
+	__tablename__ = 'resumeImageStorage'
+	id = db.Column(db.Integer(), primary_key=True, autoincrement=True)
+	resume_id = db.Column(db.Integer(), db.ForeignKey('resume.id', ondelete='SET NULL'), nullable=True)
+	resume = db.relationship('Resume', backref='resumeImageStorage', lazy=False)
+	field_id = db.Column(db.Integer(), db.ForeignKey('resumeImageFields.id', ondelete='SET NULL'), nullable=True)
+	field = db.relationship('ResumeImageFields', backref='resumeImageStorage', lazy=False)
+	image_path = db.Column(db.String(length=200), nullable=True)
+	image_public_id = db.Column(db.String(length=100), nullable=True)
+
 
 
 

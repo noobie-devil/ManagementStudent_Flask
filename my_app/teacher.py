@@ -8,6 +8,8 @@ class MyTeacherIndexView(AdminIndexView):
 			# next_url = request.url
 			# login_url = '%s?next=%s' % (url_for('login_page'), next_url)
 			return redirect(url_for('login_page'))
+		users = User.query.filter_by(id=current_user.user_id).first()
+		self._template_args["info"] = users
 		return super(MyTeacherIndexView,self).index()
 	
 class MyBaseTeacherView(MyBaseView):
@@ -36,11 +38,16 @@ class TeachingAssignmentView_Teacher(MyBaseTeacherView):
 #     <span class="ti ti-pencil"></span>
 #   </button>
 # </form> -->
+
 	def get_query(self):
-		if current_user.is_teacher:
-			teacher_id = Teacher.query.filter_by(user_id=current_user.user_id).first().id
-			return self.session.query(self.model).filter(self.model.teacher_id == teacher_id)
-		
+		teacher_id = Teacher.query.filter_by(user_id=current_user.user_id).first().id
+		return self.session.query(self.model).join(Semester).join(SchoolYear).filter(self.model.teacher_id == teacher_id, Semester.active == True, self.model.semester_id == Semester.id, self.model.school_year_id == SchoolYear.id, SchoolYear.active == True)
+	
+
+	def get_count_query(self):
+		teacher_id = Teacher.query.filter_by(user_id=current_user.user_id).first().id
+		return self.session.query(func.count('*')).select_from(self.model).join(Semester).join(SchoolYear).filter(self.model.teacher_id == teacher_id, Semester.active == True, self.model.semester_id == Semester.id, self.model.school_year_id == SchoolYear.id, SchoolYear.active == True)
+
 	list_template = 'teacher/list_class.html'
 	@expose('/')
 	def info_view(self):
@@ -62,6 +69,9 @@ class StudentInClassView_Teacher(MyBaseTeacherView):
 			return self.session.query(self.model).filter(self.model.class_info_id == int(cid))
 		else:
 			return self.session.query(self.model)
+
+	def get_count_query(self):
+		return self.session.query(func.count('*')).select_from(self.model).filter(self.model.class_info_id == int(request.args.get('cid')))
 
 	list_template='teacher/list_students.html'
 	@expose('/class')
@@ -131,11 +141,21 @@ class SubjectTranscriptView_Teacher(MyBaseTeacherView):
 			update = DetailsTranscript()
 			update.score_type_id = score_type_id
 			update.transcript_id = subject_transcript_id
+			update.score = value
 			self.session.add(update)
 			self.session.commit()
 
+		get_all_score = db.session.query(DetailsTranscript).filter_by(transcript_id=subject_transcript_id).all()
+		_sum = 0
+		_mul = 0
+		for i in get_all_score:
+			_sum += i.score * i.score_type.multiplier
+			_mul += i.score_type.multiplier
+		sub = self.session.query(SubjectTranscript).filter_by(id=subject_transcript_id).first()
+		sub.score_average = round(float(_sum/_mul),2)
+		self.session.commit()
 		return Response(
-			json.dumps({"msg" : update.transcript_id}),
+			json.dumps({"newValue" : str(update.score)}),
 			status=200,
 			mimetype='application/json'
 		)
@@ -187,7 +207,7 @@ class PersonalInfoView_Teacher(PersonalInfoView):
 		return super(PersonalInfoView_Teacher, self).render(template, **kwargs)
 
 teacher = Admin(app, name='Teacher', index_view=MyTeacherIndexView(url='/teacher', endpoint='_teacher'), base_template='master.html', template_mode='bootstrap4', url='/teacher', endpoint='_teacher')
-teacher.add_view(PersonalInfoView_Teacher(MoreInfo, db.session, name="Thông tin cá nhân", url='/teacher/info', endpoint='teacher_info'))
+teacher.add_view(PersonalInfoView_Teacher(MoreInfo, db.session, name="Thông tin cá nhân", url='/teacher/info', endpoint='teacher_info', menu_icon_type="ti", menu_icon_value="ti-pencil"))
 teacher.add_view(TeachingAssignmentView_Teacher(TeachingAssignment, db.session, name='Danh sách lớp giảng dạy', url='/teacher/list-class',endpoint='teacher_assignment'))
 teacher.add_view(StudentInClassView_Teacher(StudentInClass, db.session, name='Danh sách học sinh', url='/teacher/list-class', endpoint='class_details'))
 teacher.add_view(SubjectTranscriptView_Teacher(SubjectTranscript, db.session, name='Nhập điểm', url='/teacher/list-class', endpoint='score'))
