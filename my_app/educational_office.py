@@ -31,9 +31,9 @@ class PersonalInfoView_EduOffice(PersonalInfoView):
 
 educational_office = Admin(app, name='Phòng giáo vụ', index_view=MyEducationalOfficeIndexView(url='/edu-office', endpoint='_edu_office'), base_template='master.html', template_mode='bootstrap4', url='/edu-office', endpoint='_edu_office')
 
-educational_office.add_view(PersonalInfoView(MoreInfo, db.session, name="Thông tin cá nhân", url='/edu-office/info', endpoint='edu_office_info'))
+educational_office.add_view(PersonalInfoView(MoreInfo, db.session, name="Thông tin cá nhân", url='/edu-office/info', endpoint='edu_office_info', menu_icon_type="ti", menu_icon_value="ti-pencil"))
 
-educational_office.add_view()
+# educational_office.add_view()
 
 educational_office.add_view(StudentView(Student, db.session, name="Danh sách học sinh", url='/edu-office/list-students', endpoint='edu_office_list_students'))
 
@@ -44,7 +44,7 @@ educational_office.add_view(MyBaseEduOfficeView(TeachingAssignment, db.session,n
 
 educational_office.add_view(MyBaseEduOfficeView(Subject, db.session, name="Quản lý môn học", menu_icon_type="ti", menu_icon_value="ti-book", url='/edu-office/subject', endpoint='edu_office_subject'))
 
-educational_office.add_view(MyBaseEduOfficeView(Semester, db.session, name="Học kỳ", url='/edu-office/semester', endpoint='edu_office_semester'))
+educational_office.add_view(MyBaseEduOfficeView(Semester, db.session, name="Học kỳ", url='/edu-office/semester', endpoint='edu_office_semester', menu_icon_type="ti", menu_icon_value="ti-notepad"))
 
 educational_office.add_view(MyBaseEduOfficeView(SchoolYear, db.session, category='Năm học', name="Chỉnh sửa năm học", menu_icon_type="ti", menu_icon_value="ti-calendar", url='/edu-office/school-year', endpoint='edu_office_school_year'))
 

@@ -307,11 +307,7 @@ class InputScoreTime(db.Model):
 	id = db.Column(db.Integer(), primary_key=True, autoincrement=True)
 	start_date = db.Column(db.DateTime(), nullable=False,unique=True)
 	end_date = db.Column(db.DateTime(), nullable=False, unique=True)
-	status = db.relationship('InputScoreStatus', backref='inputScoreStatus', lazy=False, uselist=False)
-class InputScoreStatus(db.Model):
-	__tablename__ = 'inputScoreStatus'
-	time_id = db.Column(db.Integer(), db.ForeignKey('inputScoreTime.id'), primary_key=True)
-	status = db.Column(db.Boolean(), nullable=False)
+	status = db.Column(db.Boolean(), nullable=False, default=False)
 
 # --------------------------------------------------------------------------
 # ------------------------FOR CONFIRM AND SUBMIT RESUME-----------------------

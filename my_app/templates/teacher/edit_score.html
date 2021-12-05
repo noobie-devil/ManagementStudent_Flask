@@ -317,17 +317,20 @@
                     if(response.status === 500) {
                         return 'Service unavailable. Please try later.';
                     } 
-                    else {
-                        return response.responseText;
-                    }
+
                     if(response.status === 400){
                         $('.editable-error-block').html('' + response.responseJSON.msg + '');
                         // console.log(response.responseJSON);
                     }
                 
                 },
+                display: function(value, response) {
+                    return false;   //disable this method
+                },
                 success: function(response, newValue) {
-                    console.log(response.msg)
+                    $(this).html('' + response.newValue + '');
+                    
+
                 }
             });
 
