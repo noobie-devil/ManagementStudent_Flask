@@ -404,6 +404,8 @@ class PersonalInfoView(MyBaseView):
 		return super(PersonalInfoView, self).render(template, **kwargs)
 
 class ChangePasswordView(BaseView):
+	def is_visible(self):
+		return False
 	@expose('/', methods=['GET','POST'])
 	def index(self):
 		form = ChangePassForm()
@@ -569,8 +571,11 @@ admin.add_view(StudentInClassView(StudentInClass, db.session, category="Quản l
 
 admin.add_view(MyBaseView(Subject, db.session, name="Quản lý môn học", menu_icon_type="ti", menu_icon_value="ti-book"))
 
+admin.add_view(MyBaseView(InputScoreTime, db.session, name='Mở chỉnh sửa điểm'))
+
 admin.add_view(MyBaseView(ScoreType, db.session, category="Quản lý điểm", name="Thông tin bảng điểm"))
 admin.add_view(MyBaseView(SubjectTranscript, db.session, category="Quản lý điểm", name="Điểm theo môn học"))
+
 
 
 admin.add_view(MyBaseView(ResumeImageFields, db.session, name="Form hồ sơ nhập học", menu_icon_type="ti", menu_icon_value="ti-write"))

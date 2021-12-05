@@ -64,7 +64,9 @@ class MyBaseView(ModelView):
 		'classInfo.school_year' : 'Năm học',
 		'student' : 'Mã HS',
 		'class_info': 'Lớp',
-
+		'start_date': 'Ngày bắt đầu',
+		'end_date': 'Ngày kết thúc',
+		'status': 'Tình trạng'
 
 	}
 	form_widget_args = {

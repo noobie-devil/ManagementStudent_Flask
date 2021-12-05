@@ -105,6 +105,14 @@ class SubjectTranscriptView_Teacher(MyBaseTeacherView):
 
 	@expose('/class/score/ajax-update', methods=['POST'])
 	def update_score_ajax(self):
+		editable = self.check_editable()
+		if editable != 1:
+			return Response(
+				json.dumps({"msg": "Yêu cầu không khả dụng", "flash_msg": "Yêu cầu không khả dụng!!! Đang trong thời gian không cho phép nhập điểm."}),
+				status=400,
+				mimetype='application/json'
+			)
+
 		subject_transcript_id = request.form['pk']
 		score_type_id = request.form['score']
 		value = request.form['value']
@@ -160,10 +168,21 @@ class SubjectTranscriptView_Teacher(MyBaseTeacherView):
 			mimetype='application/json'
 		)
 
+	
+	def check_editable(self):
+		editable = InputScoreTime.query.filter(InputScoreTime.start_date <= datetime.now(), InputScoreTime.end_date >= datetime.now()).first()
+		if editable != None:
+			if editable.status == True:
+				editable = 1
+			else:
+				editable = 0
+		else:
+			editable = 0
+		return editable
 
 	@expose('/class/score')
 	def score_view(self):
-		
+		editable = self.check_editable()
 		teaching_assignment = TeachingAssignment.query.get(int(request.args.get('teaching-id')))
 		class_info = teaching_assignment.class_info
 		list_students = [(std.student.student_code, std.student.user.full_name) for std in class_info.student_In_Class]
@@ -183,6 +202,7 @@ class SubjectTranscriptView_Teacher(MyBaseTeacherView):
 
 		score_type = [{"score.label": type.score_name} for type in ScoreType.query.all()]
 
+
 		action = False if request.args.get('action') is None else request.args.get('action')
 		if action != False and action == 'edit':
 			self._template_args['class_info_id'] = class_info.id
@@ -191,6 +211,7 @@ class SubjectTranscriptView_Teacher(MyBaseTeacherView):
 			self._template_args['teaching_assignment'] = teaching_assignment
 			self._template_args['score'] = score
 			self._template_args['lists'] = lists
+			session['editable'] = editable
 			return super(SubjectTranscriptView_Teacher,self).index_view()		
 
 class PersonalInfoView_Teacher(PersonalInfoView):

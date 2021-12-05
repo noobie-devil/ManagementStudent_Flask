@@ -218,7 +218,7 @@
         {{ lib.add_modal_window() }}
     {%- endif -%}
 
-
+    {{session['editable']}}
     <div class="panel panel-default">
         <div class="panel-heading">
             <div class="row pt-3">
@@ -290,7 +290,11 @@
     <script type="text/javascript" src="/static/bootstrap4-editable/js/bootstrap-editable.min.js"></script>
 
     {{ super() }}
-
+    {% if session['editable'].status %}
+        {% set status = 1 %}
+    {% else %}
+        {% set status = 0 %}
+    {% endif %}
 
    <script type="text/javascript" language="javascript">
         $(document).ready(function(){
@@ -305,6 +309,7 @@
                 title:'Name',
                 type:'POST',
                 savenochange: false,
+                disabled: {{status}} == 0 ? true : false,
                 emptytext: 'Trống', 
                 params: function(params) {
                     // add additional params from data-attributes of trigger element
