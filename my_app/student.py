@@ -114,8 +114,14 @@ class ConfirmView_Student(BaseView):
 # 		flash(f'Đăng nhập thành công !!!', category='success')
 # 		return redirect(url_for('_student.index'))
 
+class ChangePasswordView_Student(ChangePasswordView):
+	@expose('/', methods=['GET','POST'])
+	def index(self):
+		return super(ChangePasswordView_Student, self).index()
 
 student = Admin(app, name='Student', index_view=MyStudentIndexView(url='/student', endpoint='_student'), base_template='master.html', template_mode='bootstrap4', url='/student', endpoint='_student')
 student.add_view(PersonalInfoView_Student(MoreInfo,db.session, name='Thông tin cá nhân', url='/student/info', endpoint='student_info', menu_icon_type="ti", menu_icon_value="ti-pencil"))
 student.add_view(ConfirmView_Student(name="confirm", url='/student/confirm', endpoint='_confirmStudent'))
-# student.add_view(SubmitConfirmView_Student(name="submitConfirm", url='/student/confirm/submit', endpoint='_submitConfirmStudent'))
+
+#student.add_view(SubmitConfirmView_Student(name="submitConfirm", url='/student/confirm/submit', endpoint='_submitConfirmStudent'))
+student.add_view(ChangePasswordView_Student(name="Đổi mật khẩu", url="/student/change-password", endpoint='_changePasswordStudent'))
