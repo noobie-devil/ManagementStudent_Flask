@@ -1,0 +1,77 @@
+{% extends 'admin/master.html' %}
+{% block body %}
+<div class="row">
+    <div class="card" style="position: relative; width:90%; margin:auto; text-align: center;">
+        <div class="card-header bg-primary">
+            <h5 class="text-white" style="text-align: center;">BÁO CÁO TỔNG KẾT MÔN</h5>
+        </div>
+    </div>
+
+    <div style="background: white; height: 0px; padding-top:10px; padding-bottom:-30px; position: relative;
+                width:90%; margin:auto; text-align: center;"></div>
+</div>
+<div class="row">
+    {% for item in range(0, countDataSubjectReport) %}
+    <div class="card"
+         style="background: white; height: 40px; padding-top:10px; padding-bottom:-30px; position: relative; width:90%; margin:auto; text-align: center;">
+        <div class="form-group row pb-5" style="padding-bottom: -50px;">
+            <div class="col-sm-6">
+                <div class="form-group row pb-5">
+                    <div class="col-sm-2">
+                        <h6>Môn:</h6>
+                    </div>
+                    <div class="col-sm-10" style="text-align:left;">
+                        <h6>{{subject}}</h6>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="form-group row pb-5">
+                    <div class="col-sm-3">
+                        <h6>Học kỳ:</h6>
+                    </div>
+                    <div class="col-sm-9">
+                        <h6>{{getSemester[item].display_name}}</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card" style="margin:auto; width: 90%">
+        <div class="table-responsive">
+            <table class="table">
+                <thead class="thead-light">
+                <tr>
+                    <th scope="col">STT</th>
+                    <th scope="col">Lớp</th>
+                    <th scope="col">Sĩ số</th>
+                    <th scope="col">Số lượng đạt</th>
+                    <th scope="col">Tỷ lệ</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for index in range(countElementDataSubjectReport[item]) %}
+                {% if count != 0 %}
+                <tr>
+                    <td>{{allDataSubjectReport[item][index].STT}}</td>
+                    <td>{{allDataSubjectReport[item][index].ClassName}}</td>
+                    <td>{{allDataSubjectReport[item][index].Number}}</td>
+                    <td>{{allDataSubjectReport[item][index].Pass}}</td>
+                    <td>{{allDataSubjectReport[item][index].Percent}}%</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td>HELA</td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div style="position: relative; padding-top:30px; padding-bottom:30px">
+        <hr style="width: 92%; border-top: 1px solid red; margin:auto;"/>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

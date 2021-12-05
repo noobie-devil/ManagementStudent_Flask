@@ -301,18 +301,18 @@ class ClassInfoView(MyBaseView):
 
 class AccountView(MyBaseView):
     # column_exclude_list = ['password']
-    column_list = ('id','username', 'password_hash', 'active', 'created_at' )
-    column_labels = dict(password_hash='Password Hashed', created_at='Ngày tạo')
-    form_columns = ('user','username','password', 'role', 'active')
-    form_extra_fields = {
-        'password': fields.PasswordField(label='Password:',validators=[Length(min=8, max=60), DataRequired()])
-    }
-    def on_model_change(self, form, Account, is_created):
-        if form.password.data:
-        	Account.password = form.password.data
+	column_list = ('id', 'username', 'password_hash', 'active', 'created_at')
+	column_labels = dict(password_hash='Password Hashed', created_at='Ngày tạo')
+	form_columns = ('user', 'username', 'password', 'role', 'active')
+	form_extra_fields = {
+		'password': fields.PasswordField(label='Password:', validators=[Length(min=8, max=60), DataRequired()])
+	}
+
+	def on_model_change(self, form, Account, is_created):
+		if form.password.data:
+			Account.password = form.password.data
 
 class PersonalInfoView(MyBaseView):
-
 	# def edit_form(self):
 	# 	form = UpdateInfoForm()
 	# 	return form
