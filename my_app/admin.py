@@ -149,16 +149,17 @@ class UserView(MyBaseView):
 				self.session.flush()
 				self.session.delete(account)
 				self.session.commit()
-			user = self.session.query(User).filter_by(id=model.user.id).first()
-			if user != None:
-				self.session.flush()
-				self.session.delete(user)
-				self.session.commit()
+			
 			get_image = model.user.image_id
 			self.on_model_delete(model)
 			self.session.flush()
 			self.session.delete(model)
 			self.session.commit()
+			user = self.session.query(User).filter_by(id=model.user.id).first()
+			if user != None:
+				self.session.flush()
+				self.session.delete(user)
+				self.session.commit()
 			if get_image != None:
 				cloudinary.uploader.destroy(get_image, invalidate=True)
 		except Exception as ex:
