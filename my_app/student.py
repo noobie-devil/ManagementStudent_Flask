@@ -106,9 +106,11 @@ class Score_Student(BaseView):
 	@expose('/', methods=['GET','POST'])
 	def index(self):
 		getSemester = Semester.query.filter_by(active=1)
+		getSchoolYear = SchoolYear.query.filter_by(active=1).first()
+		schoolYear = getSchoolYear.year
 		semester = ""
 		try:
-			semester = getSemester[0].semester_name
+			semester = getSemester[0].display_name
 		except:
 			semester = ""
 		getIdStudent = Student.query.filter_by(user_id = current_user.user.id)
@@ -148,6 +150,7 @@ class Score_Student(BaseView):
 		self._template_args["column"] = column
 		self._template_args["row"] = row
 		self._template_args["semester"] = semester
+		self._template_args["schoolYear"] = schoolYear
 		self._template_args["avgYear"] = round(allScore/row, 2)
 		return self.render('student/list_score.html')
 
@@ -155,4 +158,4 @@ student = Admin(app, name='Student', index_view=MyStudentIndexView(url='/student
 student.add_view(PersonalInfoView_Student(MoreInfo,db.session, name='Thông tin cá nhân', url='/student/info', endpoint='student_info', menu_icon_type="ti", menu_icon_value="ti-pencil"))
 student.add_view(ConfirmView_Student(name="confirm", url='/student/confirm', endpoint='_confirmStudent'))
 student.add_view(ChangePasswordView_Student(name="Đổi mật khẩu", url="/student/change-password", endpoint='_changePasswordStudent'))
-student.add_view(Score_Student(name="Xem điểm", url="/student/score", endpoint='_scoreStudent', menu_icon_type="ti", menu_icon_value="ti-info"))
+student.add_view(Score_Student(name="Xem điểm", url="/student/score", endpoint='_scoreStudent', menu_icon_type="ti", menu_icon_value="ti-view-list-alt"))
