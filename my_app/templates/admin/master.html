@@ -175,9 +175,27 @@
                                         {% endif %}
                                     </li>
                                     <li>
-                                        <a href="{{request.url + 'info'}}">
+                                        {% if current_user.is_admin() %}
+                                        <a href="{{url_for('admin_info.info_view')}}">
                                             <i class="ti-user"></i> Thông tin cá nhân
                                         </a>
+                                        {% endif %}
+                                        {% if current_user.is_teacher() %}
+                                        <a href="{{url_for('teacher_info.info_view')}}">
+                                            <i class="ti-user"></i> Thông tin cá nhân
+                                        </a>
+                                        {% endif %}
+                                        {% if current_user.is_student() %}
+                                        <a href="{{url_for('student_info.info_view')}}">
+                                            <i class="ti-user"></i> Thông tin cá nhân
+                                        </a>
+                                        {% endif %}
+                                        {% if current_user.is_edu_office() %}
+                                        <a href="{{url_for('edu_office_info.info_view')}}">
+                                            <i class="ti-user"></i> Thông tin cá nhân
+                                        </a>
+                                        {% endif %}
+
                                     </li>
                                     <li>
                                         <a href="{{ url_for('logout') }}">
@@ -214,17 +232,28 @@
                                         <li class="more-details">
                                             {% if current_user.is_admin() %}
                                                 <a href="{{ url_for('_changePasswordAdmin.index') }}"><i class="ti-settings"></i>Đổi mật khẩu</a>
+                                                <a href="{{url_for('admin_info.info_view')}}">
+                                                    <i class="ti-user"></i> Thông tin cá nhân
+                                                </a>
                                             {% endif %}
                                             {% if current_user.is_teacher() %}
                                                 <a href="{{ url_for('_changePasswordTeacher.index') }}"><i class="ti-settings"></i>Đổi mật khẩu</a>
+                                                <a href="{{url_for('teacher_info.info_view')}}">
+                                                    <i class="ti-user"></i> Thông tin cá nhân
+                                                </a>
                                             {% endif %}
                                             {% if current_user.is_student() %}
                                                 <a href="{{ url_for('_changePasswordStudent.index') }}"><i class="ti-settings"></i>Đổi mật khẩu</a>
+                                                <a href="{{url_for('student_info.info_view')}}">
+                                                    <i class="ti-user"></i> Thông tin cá nhân
+                                                </a>
                                             {% endif %}
                                             {% if current_user.is_edu_office() %}
                                                 <a href="{{ url_for('_changePasswordEduOffice.index') }}"><i class="ti-settings"></i>Đổi mật khẩu</a>
+                                                <a href="{{url_for('edu_office_info.info_view')}}">
+                                                    <i class="ti-user"></i> Thông tin cá nhân
+                                                </a>
                                             {% endif %}
-                                            <a href="{{request.url + 'info'}}"><i class="ti-user"></i>Thông tin cá nhân</a>
                                             <a href="{{ url_for('logout') }}"><i class="ti-layout-sidebar-left"></i>Đăng xuất</a>
                                         </li>
                                     </ul>

@@ -51,7 +51,7 @@ class ResumeOnlineView(MyBaseEduOfficeView):
 	# 	return super(ResumeOnlineView, self).index_view()
 
 
-educational_office = Admin(app, name='Phòng giáo vụ', index_view=MyEducationalOfficeIndexView(url='/edu-office', endpoint='_edu_office'), base_template='master.html', template_mode='bootstrap4', url='/edu-office', endpoint='_edu_office')
+educational_office = Admin(app, name='Phòng giáo vụ', index_view=MyEducationalOfficeIndexView(url='/edu-office', endpoint='_edu_office', menu_icon_type="ti", menu_icon_value="ti-home"), base_template='master.html', template_mode='bootstrap4', url='/edu-office', endpoint='_edu_office')
 
 educational_office.add_view(PersonalInfoView_EduOffice(MoreInfo, db.session, name="Thông tin cá nhân", url='/edu-office/info', endpoint='edu_office_info', menu_icon_type="ti", menu_icon_value="ti-pencil"))
 
