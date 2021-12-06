@@ -247,6 +247,12 @@ class SubjectReportView_Teacher(BaseView):
 		subject = ""
 		getTeacher = Teacher.query.filter_by(user_id=current_user.user_id).first()
 		getSemester = Semester.query.filter_by(active = 1)
+		getSchoolYear = SchoolYear.query.filter_by(active = 1).first()
+
+		try:
+			schoolYear = getSchoolYear.year
+		except:
+			schoolYear = ""
 
 		for value_semester in getSemester:
 			classTeaching = TeachingAssignment.query.join(ClassInfo).filter(TeachingAssignment.teacher_id == getTeacher.id, TeachingAssignment.semester_id == value_semester.id, TeachingAssignment.class_info_id == ClassInfo.id, ClassInfo.amount_std > 0)
@@ -272,6 +278,7 @@ class SubjectReportView_Teacher(BaseView):
 
 		self._template_args["getSemester"] = getSemester
 		self._template_args["subject"] = subject
+		self._template_args["schoolYear"] = schoolYear
 		self._template_args["countDataSubjectReport"] = countDataSubjectReport
 		self._template_args["countElementDataSubjectReport"] = countElementDataSubjectReport
 		self._template_args["allDataSubjectReport"] = allDataSubjectReport
@@ -331,6 +338,11 @@ class FinalSemesterReportView_Teacher(BaseView):
 		getTeacher = Teacher.query.filter_by(user_id=current_user.user_id).first()
 		classTeaching = TeachingAssignment.query.filter_by(teacher_id=getTeacher.id)
 
+		getSemester = Semester.query.filter_by(active=1).first()
+		getSchoolYear = SchoolYear.query.filter_by(active=1).first()
+		semester = getSemester.display_name
+		schoolYear = getSchoolYear.year
+
 		class_info_id = []
 		for i in classTeaching:
 			if i.class_info.teacher_id == getTeacher.id:
@@ -365,6 +377,8 @@ class FinalSemesterReportView_Teacher(BaseView):
 			allInfoStudentReport.append(infoStudentReport)
 
 		self._template_args["allInfoStudentReport"] = allInfoStudentReport
+		self._template_args["semester"] = semester
+		self._template_args["schoolYear"] = schoolYear
 		return self.render('teacher/final_semester_report.html')
 
 teacher = Admin(app, name='Teacher', index_view=MyTeacherIndexView(url='/teacher', endpoint='_teacher', menu_icon_type="ti", menu_icon_value="ti-home"), base_template='master.html', template_mode='bootstrap4', url='/teacher', endpoint='_teacher')
@@ -373,6 +387,6 @@ teacher.add_view(PersonalInfoView_Teacher(MoreInfo, db.session, name="Thông tin
 teacher.add_view(StudentInClassView_Teacher(StudentInClass, db.session, name='Danh sách học sinh', url='/teacher/list-class', endpoint='class_details'))
 teacher.add_view(SubjectTranscriptView_Teacher(SubjectTranscript, db.session, name='Nhập điểm', url='/teacher/list-class', endpoint='score'))
 teacher.add_view(ChangePasswordView_Teacher(name="Đổi mật khẩu", url="/teacher/change-password", endpoint='_changePasswordTeacher'))
-teacher.add_view(SubjectReportView_Teacher(name='Báo cáo tổng kết môn', url='/teacher/subject-report', endpoint='subject_report'))
-teacher.add_view(FinalSemesterReportView_Teacher(name='Báo cáo tổng kết học kỳ', url='/teacher/final-semester-report', endpoint='final_semester_report'))
+teacher.add_view(SubjectReportView_Teacher(name='Báo cáo tổng kết môn', url='/teacher/subject-report', endpoint='subject_report', menu_icon_type="ti", menu_icon_value="ti-notepad"))
+teacher.add_view(FinalSemesterReportView_Teacher(name='Báo cáo tổng kết học kỳ', url='/teacher/final-semester-report', endpoint='final_semester_report', menu_icon_type="ti", menu_icon_value="ti-clipboard"))
 
