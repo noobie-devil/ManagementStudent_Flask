@@ -326,8 +326,8 @@ class Resume(db.Model):
 	user = db.relationship('User', backref='resume', lazy=False)
 	uploaded_at = db.Column(db.DateTime, nullable=False, default=datetime.now())
 	modified_at = db.Column(db.DateTime, nullable=True, default=datetime.now())
-	submitted_at = db.Column(db.DateTime, nullable=False, default=datetime.now())
-	confirm = db.Column(db.Boolean, nullable=False, default=False)
+	confirmed_at = db.Column(db.DateTime, nullable=True)
+	status = db.Column(db.Integer, nullable=False, default=0)
 
 class ResumeImageStorage(db.Model):
 	__tablename__ = 'resumeimagestorage'
