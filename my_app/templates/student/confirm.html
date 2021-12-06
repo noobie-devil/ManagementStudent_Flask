@@ -135,7 +135,7 @@
                                                 <div class="col-sm-3">
                                                     <label>
                                                         Upload
-                                                        <input required id="file-input" name="{{field.id}}" multiple type="file"
+                                                        <input id="file-input" name="{{field.id}}" type="file"
                                                                style="visibility: hidden;"/>
                                                     </label>
                                                 </div>
@@ -172,12 +172,19 @@
 </script>
 {% if resume_images is defined %}
 <script>
-    document.querySelector('input[type="submit"]').setAttribute('disabled','');
+
+    
     let resumeImages = JSON.parse('{{ resume_images | tojson | safe}}');
+    let denied = JSON.parse('{{ denied | tojson | safe }}');
+    if(denied == false){
+        document.querySelector('input[type="submit"]').setAttribute('disabled','');
+    }
     let previewItemList = document.querySelectorAll('.preview'); 
     for(let i = 0; i < previewItemList.length; i++)
     {
-        fileInput[i].setAttribute("disabled", "");;
+        if(denied == false){
+            fileInput[i].setAttribute("disabled", "");
+        }
         let image = new Image();
         image.height = 100;
         image.title = previewItemList[i].getAttribute('id');
@@ -201,7 +208,7 @@
             if (!/\.(jpe?g|png|gif)$/i.test(file.name)) {
                 return alert(file.name + " is not an image");
             } // else...
-
+            previewItem.innerHTML ='';
             var reader = new FileReader();
 
             reader.addEventListener("load", function() {

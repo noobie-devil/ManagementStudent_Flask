@@ -14,12 +14,14 @@ class MyBaseView(ModelView):
 	list_template = 'admin/list.html'
 	column_labels = {
 		'id': 'ID',
+		'user.id': 'User ID',
 		'user.image': 'Hình ảnh',
 		'teacher_code': 'Mã GV',
 		'student_code': 'Mã HS',
 		'subject': 'Môn  phụ trách',
 		'classInfo': 'Lớp',
 		'semester': 'Học kỳ',
+		'user': 'Họ và tên',
 		'user.full_name': 'Họ và tên',
 		'full_name': 'Họ và tên',
 		'user.gender': 'Giới tính',
@@ -66,7 +68,7 @@ class MyBaseView(ModelView):
 		'class_info': 'Lớp',
 		'start_date': 'Ngày bắt đầu',
 		'end_date': 'Ngày kết thúc',
-		'status': 'Tình trạng'
+		'status': 'Tình trạng',
 
 	}
 	form_widget_args = {

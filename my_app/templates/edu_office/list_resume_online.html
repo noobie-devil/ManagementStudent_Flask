@@ -13,8 +13,7 @@
     <!-- CSS FOR DATATABLE -->
     <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.css" /> -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.3/css/dataTables.bootstrap4.min.css" />
-
-
+    
     <!-- ADD SCRIPT FOR DATATABLE -->
 
     <!-- <script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script> -->
@@ -33,11 +32,29 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.1/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet">
     <!-- <link rel="stylesheet" type="text/css" href="/static/bootstrap4-editable/css/bootstrap-editable.css"> -->
     <style>
-        .editable-error-block{
+        #loading-bar-spinner.spinner {
+            left: 50%;
+            margin-left: -20px;
+            top: 50%;
+            margin-top: -20px;
             position: absolute;
-            transform: translateY(100%);
-            color: red;
+            z-index: 19 !important;
+            animation: loading-bar-spinner 400ms linear infinite;
         }
+
+        #loading-bar-spinner.spinner .spinner-icon {
+            width: 40px;
+            height: 40px;
+            border:  solid 4px transparent;
+            border-top-color:  #00C8B1 !important;
+            border-left-color: #00C8B1 !important;
+            border-radius: 50%;
+        }
+
+        @keyframes loading-bar-spinner {
+          0%   { transform: rotate(0deg);   transform: rotate(0deg); }
+          100% { transform: rotate(360deg); transform: rotate(360deg); }
+      }
         .container {
             padding: 2rem 0rem;
         }
@@ -51,6 +68,76 @@
                 vertical-align: middle;
             }
         }
+        .table-wrap {
+          overflow-x: scroll; }
+        .table {
+            min-width: 1000px !important;
+            width: 100%;
+            background: #fff;
+            -webkit-box-shadow: 0px 5px 12px -12px rgba(0, 0, 0, 0.29);
+            -moz-box-shadow: 0px 5px 12px -12px rgba(0, 0, 0, 0.29);
+            box-shadow: 0px 5px 12px -12px rgba(0, 0, 0, 0.29);
+            text-align: center; }
+            .table thead th {
+            border: none;
+            padding: 30px;
+            font-size: 14px;
+            color: #000; }
+            .table tbody tr {
+            margin-bottom: 10px; }
+            .table tbody td {
+            font-size: 14px;
+            background: #fff;
+            vertical-align: middle;
+            -webkit-transition: 0.5s;
+            -o-transition: 0.5s;
+            transition: 0.5s; }
+            @media (prefers-reduced-motion: reduce) {
+            .table tbody td {
+            -webkit-transition: none;
+            -o-transition: none;
+            transition: none; } }
+            .table tbody td i {
+            font-size: 12px;
+            color: rgba(0, 0, 0, 0.3); }
+            .table tbody td .img {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto; }
+            .table tbody td a {
+            display: block;
+            color: #ffafb0;
+            font-size: 12px; }
+            .table tbody td a strong {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #666666; }
+            .table tbody td:hover {
+            background: whitesmoke; }
+            .table tfoot tr th a {
+            font-weight: 400;
+            color: #000; }
+            .table tfoot tr th a i {
+            font-size: 12px; }
+            .table tfoot tr th a:hover {
+            color: #ffafb0; 
+        }
+        .table-bordered {
+          border: 1px solid #dee2e6; }
+          .table-bordered th,
+          .table-bordered td {
+            border: 1px solid #dee2e6; }
+            .table-bordered thead th,
+            .table-bordered thead td {
+                border-bottom-width: 2px; }
+        img {
+          vertical-align: middle;
+          border-style: none; }
+          .img {
+              background-size: cover;
+              background-repeat: no-repeat;
+              background-position: center center; }
+
     </style>
     
     {% endblock %}
@@ -233,113 +320,56 @@
     {%- if admin_view.edit_modal or admin_view.create_modal or admin_view.details_modal -%}
         {{ lib.add_modal_window() }}
     {%- endif -%}
-    {{resumes}}
+
     <div class="panel panel-default">
         <div class="panel-heading">
-            
+
         </div>
         <div class="panel-body">
-        <div class="table-responsive">
-            <table id="score_data" class="table table-image table-bordered table-striped model-list">
-                <!-- <thead>
-                    <tr>
-                        <th class="column-header">
-                            Mã HS
-                        </th>        
-                        <th class="column-header">
-                            Họ tên
-                        </th>                         
-                        {% for item in score %}
-                        <th class="column-header">
-                            {{ item.score_name}}
-                        </th>     
-                        {% endfor %}
-                    </tr>
-                </thead> -->
-                <!-- <tbody>
-                    {% for row in employee %}
-                    <tr>
-                        <td data-pk="{{row.id}}">{{row.id}}</td>
-                        <td data-name="name" class="name" data-type="text" data-pk="{{row.id}}">{{row.name}}</td>
-                        <td data-name="email" class="email" data-type="text" data-pk="{{row.id}}">{{row.email}}</td>
-                        <td data-name="phone" class="phone" data-type="text" data-pk="{{row.id}}">{{row.phone}}</td>
-                    </tr>
-                    {% endfor %}
-                    {% for student in lists %}
+            <div class="table-wrap">
+                <table id="resume-table" class="table table-bordered text-center">
+                    <thead>
                         <tr>
-                            <td data-name="name" class="name" data-type="text">{{ student['student'].student_code }}</td>
-                            <td>{{ student['student'].user.full_name }}</td>
-                            {% for s in student['score'] %}
-                                {% if 'score_value' in s and s['score_value'] is not none%}
-                                    <td data-name="score" data-score="{{ s['id'] }}" class="score editable-click" data-value="{{ s['score_value'] }}" data-type="text" data-pk="{{ student['id'] }}">{{ s['score_value'] }}</td>
-                                {% else %}
-                                    <td data-name="score" data-score="{{ s['id'] }}" data-student="{{ student['student_id'] }}" class="score editable-click editable-empty" data-value="" data-type="text" data-pk="{{ student['id'] }}">Trống</td>
-                                {% endif %}
+                            <th>ID</th>
+                            <th>Họ và tên</th>
+                            {% for field in fields %}
+                            <th>{{ field.field_name}}</th>
                             {% endfor %}
-                            
+                            <th>Thao tác</th>
                         </tr>
-                    {% endfor %}
-                    
-                </tbody> -->
-                <!-- <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Phone</th>
-                    </tr>
-                </thead> -->
-                <thead>
-                    <tr>
-                        <th scope="col">Day</th>
-                        <th scope="col">Image</th>
-                        <th scope="col">Article Name</th>
-                        <th scope="col">Author</th>
-                        <th scope="col">Words</th>
-                        <th scope="col">Shares</th>
-                    </tr>
-                </thead>
-                <!-- <tbody> -->
-                    <!-- {% for row in employee %} -->
-                    <!-- <tr>
-                        <td data-pk="{{row.id}}"><!-- {{row.id}} -->asdsa</td>
-                        <td data-name="name" class="name" data-type="text" data-pk="{{row.id}}"><!-- {{row.name}} -->sadsa</td>
-                        <td data-name="email" class="email" data-type="text" data-pk="{{row.id}}"><!-- {{row.email}} -->asdsad</td>
-                        <td data-name="phone" class="phone" data-type="text" data-pk="{{row.id}}"><!-- {{row.phone}} -->sadsadsad</td>
-                    </tr> -->
-                    <!-- {% endfor %} -->
-                <!-- </tbody> -->
-                <tbody>
-                    <tr>
-                        <th scope="row">1</th>
-                        <td class="w-25">
-                            <img src="https://s3.eu-central-1.amazonaws.com/bootstrapbaymisc/blog/24_days_bootstrap/sheep-3.jpg" class="img-fluid img-thumbnail" alt="Sheep">
-                        </td>
-                        <td>Bootstrap 4 CDN and Starter Template</td>
-                        <td>Cristina</td>
-                        <td>913</td>
-                        <td>2.846</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">2</th>
-                        <td class="w-25">
-                            <img src="https://s3.eu-central-1.amazonaws.com/bootstrapbaymisc/blog/24_days_bootstrap/sheep-5.jpg" class="img-fluid img-thumbnail" alt="Sheep">
-                        </td>
-                        <td>Bootstrap Grid 4 Tutorial and Examples</td>
-                        <td>Cristina</td>
-                        <td>1.434</td>
-                        <td>3.417</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>  
+                    </thead>
+                    <tbody id='table-body'>
+                        {% for row in resumes %}
+                        <tr id="row-{{ row['id'] }}" data-index="{{loop.index}}">
+                            <td><a href="#"><strong>{{ row['id'] }}</strong></a></td>
+                            <td ><a href="#"><strong>{{ row['full_name'] }}</strong></a></td>
+                            {% for fields_image in row['fieldsImage'] %}
+                            <td class="text-center"><div class="img " style="background-image: url({{fields_image}});"></div>
+                            {% endfor %}
+                            <td>
+                                <button data-id="{{row['id']}}" data-action="confirm" class="btn btn-success" onclick="ResumeHandler(this)"><i class="icofont icofont-check" style="font-size: inherit; color: inherit;"></i>Duyệt</button>
+
+                                <button data-id="{{row['id']}}" data-action="reject" class="btn btn-danger" onclick="ResumeHandler(this)"><i class="icofont icofont-close" style="font-size: inherit; color: inherit;">Từ chối</i></button>
+
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+
+                    </table>
+                </div>
+            </div>
         </div>
-    </div>
-    <br />
-    <br />
+        <br />
+        <br />
+        
+        
+                
+    
 {% endblock %}
 
 {% block tail %}
+   
 
     <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
 
@@ -348,60 +378,53 @@
     {{ super() }}
 
    <script type="text/javascript" language="javascript">
-        $(document).ready(function(){
-            $.fn.editable.defaults.mode = 'inline';
-            var dataTable = $('#score_data').DataTable({
-                "paging": false
-            });
-            $('#score_data').editable({
-                container:'body',
-                selector:'td.score',
-                url: '/teacher/list-class/class/score/ajax-update',
-                title:'Name',
-                type:'POST',
-                savenochange: false,
-                disabled: {{session['editable']}} == 1 ? false : true,
-                emptytext: 'Trống', 
-                params: function(params) {
-                    // add additional params from data-attributes of trigger element
-                    var element = $(this)
-                    params.score = element.data('score');
-                    return params;
+        function sleeper(ms) {
+            return function(x) {
+                return new Promise(resolve => setTimeout(() => resolve(x), ms));
+            };
+        }
+        var table = document.getElementById('resume-table');
+        var reloadHTML = `
+                        <div id="loading-bar-spinner" class="spinner" style="margin-top: 50px;"><div class="spinner-icon"></div></div></td>
+                        
+                    `;
 
-                },
-                error: function(response, newValue) {
-                    if(response.status === 500) {
-                        return 'Service unavailable. Please try later.';
-                    } 
+        function ResumeHandler(element){
+            let resumeId = element.getAttribute('data-id');
+            let parentElement = element.closest(`#row-${resumeId}`);
+            
+            let temp = document.getElementById('table-body').innerHTML;
 
-                    if(response.status === 400){
-                        $('.editable-error-block').html('' + response.responseJSON.msg + '');
-                        if(response.responseJSON.flash_msg)
-                        {
-                            container = document.querySelector('.flash-msg');
-                            container.innerHTML = `<div class="alert alert-danger">
-                <button class="m1-2 mb-1 close " type="button" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-                ${response.responseJSON.flash_msg}
-            </div>`;
-                    
-                        }
-                        // console.log(response.responseJSON);
-                    }
-                
-                },
-                display: function(value, response) {
-                    return false;   //disable this method
-                },
-                success: function(response, newValue) {
-                    $(this).html('' + response.newValue + '');
-                    
-
+            fetch("{{ url_for('edu_office_resume.handler_ajax') }}",{
+                method: "post",
+                body: JSON.stringify({
+                    "resume_id": element.getAttribute('data-id'),
+                    "action": element.getAttribute('data-action')
+                }),
+                headers: {
+                    "content-type": "application/json"
                 }
+            }).then(function(response){
+                if(response.ok){
+                    table.deleteRow(parentElement.getAttribute('data-index'));
+                    temp = document.getElementById('table-body').innerHTML;
+                }
+                document.getElementById('table-body').innerHTML = reloadHTML;
+                return response.json();
+            })
+            .then(sleeper(500))
+            .then(json => {
+                container = document.querySelector('.flash-msg');
+                container.innerHTML = `<div class="alert alert-${json.category}">
+                <button class="m1-2 mb-1 close " type="button" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+                ${json.msg}
+                </div>`;
+                document.getElementById('table-body').innerHTML = temp;
+                
             });
-
-        }); 
+        }
     </script>
 
     {% if filter_groups %}

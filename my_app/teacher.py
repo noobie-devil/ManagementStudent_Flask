@@ -18,7 +18,7 @@ class MyTeacherIndexView(AdminIndexView):
 	
 class MyBaseTeacherView(MyBaseView):
 	def is_accessible(self):
-		return current_user.is_teacher()
+		return current_user.is_authenticated and current_user.is_teacher()
 
 	def inaccessible_callback(self, name, **kwargs):
 		flash('Yêu cầu truy cập không khả dụng!! Hãy đăng nhập', category='danger')
@@ -311,11 +311,19 @@ class InfoStudentReport:
 
 class FinalSemesterReportView_Teacher(BaseView):
 	def is_visible(self):
+		return self.check_main_teacher()
+		
+	def check_main_teacher(self):
 		teacher_id = db.session.query(Teacher).filter_by(user_id = current_user.user.id).first().id
 		count = db.session.query(ClassInfo).filter(ClassInfo.teacher_id == teacher_id).count()
 		if count > 0:
 			return True
 		return False
+
+	def is_accessible(self):
+		return current_user.is_authenticated and current_user.is_teacher() and self.check_main_teacher()
+
+	
 
 	@expose('/')
 	def index(self):

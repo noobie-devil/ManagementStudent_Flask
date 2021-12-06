@@ -16,7 +16,7 @@ class MyStudentIndexView(AdminIndexView):
 	
 class MyBaseStudentView(MyBaseView):
 	def is_accessible(self):
-		return current_user.is_student()
+		return current_user.is_authenticated and current_user.is_student()
 
 	def inaccessible_callback(self, name, **kwargs):
 		flash('Yêu cầu truy cập không khả dụng!! Hãy đăng nhập', category='danger')
@@ -74,9 +74,17 @@ class ConfirmView_Student(BaseView):
 		resume_student = Resume.query.filter_by(user_id=current_user.user.id).first()
 		if resume_student:
 			resume_images = [{str(image.field_id): image.image_path} for image in ResumeImageStorage.query.filter_by(resume_id=resume_student.id).all()]
-			# resume_images = ResumeImageStorage.query.filter_by(resume_id=resume_student.id).all()
-			self._template_args["resume_images"] = resume_images
-			flash('Hồ sơ của bạn đang chờ được duyệt !!!', category='danger')
+			if resume_student.status == 0:
+				# resume_images = ResumeImageStorage.query.filter_by(resume_id=resume_student.id).all()
+				self._template_args["resume_images"] = resume_images
+				self._template_args["denied"] = False
+				flash('Hồ sơ của bạn đang chờ được duyệt !!!', category='danger')
+			elif resume_student.status == 2:
+				self._template_args["resume_images"] = resume_images
+				self._template_args["denied"] = True
+				flash('Hồ sơ không hợp lệ !!! Vui lòng cập nhật lại.', category='danger')
+			elif resume_student.status == 1:
+				redirect(url_for('_student.index'))
 		self._template_args["image_fields"] = image_fields
 		return self.render('student/confirm.html')
 
@@ -84,13 +92,32 @@ class ConfirmView_Student(BaseView):
 	def submit(self):
 		image_fields = ResumeImageFields.query.filter_by(role_id=current_user.role_id).all()
 		if request.method == 'POST':
-			resume = Resume(user_id=current_user.user.id)
-			db.session.add(resume)
+			resume = db.session.query(Resume).filter_by(user_id=current_user.user_id).first()
+			if resume == None:
+				for field in image_fields:
+					if request.files[str(field.id)].filename == '':
+						flash('Đã xảy ra lỗi !!! Hãy điền đủ các trường cần thiết trước khi submit.', category='danger')
+						return redirect(url_for('_confirmStudent.index'))
+				resume = Resume(user_id=current_user.user.id)
+				db.session.add(resume)
+			else:
+				resume.modified_at = datetime.now()
+				resume.status = 0 
+			
 			db.session.commit()
+
 			for field in image_fields:
-				info = cloudinary.uploader.upload(request.files[str(field.id)])
-				save = ResumeImageStorage(resume_id=resume.id, field_id=field.id, image_path=info['secure_url'], image_public_id=info['public_id'])
-				db.session.add(save)
+				exist = db.session.query(ResumeImageStorage).filter(ResumeImageStorage.field_id == field.id, ResumeImageStorage.resume_id == resume.id).first()
+				
+				if exist != None and request.files[str(field.id)].filename != '':
+					info = cloudinary.uploader.upload(request.files[str(field.id)])
+					cloudinary.uploader.destroy(exist.image_public_id, invalidate=True)
+					exist.image_path = info['secure_url']
+					exist.image_public_id = info['public_id']
+				elif exist == None:
+					info = cloudinary.uploader.upload(request.files[str(field.id)])
+					save = ResumeImageStorage(resume_id=resume.id, field_id=field.id, image_path=info['secure_url'], image_public_id=info['public_id'])
+					db.session.add(save)
 				db.session.commit()
 			flash('Nộp hồ sơ thành công !!! Hồ sơ của bạn đang ở hàng chờ để duyệt.', category='success')
 			return redirect(url_for('_confirmStudent.index'))

@@ -349,11 +349,10 @@ class ClassInfoView(MyBaseView):
 		return self.session.query(self.model).join(SchoolYear).filter(SchoolYear.active == True)
 		# return self.session.query(self.model).filter(self.model.school_year.active==True)
 		
-	# def get_count_query(self):
-	# 	return self.session.query(func.count('*')).filter(SchoolYear.active == True)
-		# return self.session.query(func.count('*')).filter(self.model.school_year.active==True)
+	def get_count_query(self):
+		return self.session.query(func.count('*')).filter(SchoolYear.active == True)
 
-	form_excluded_columns = ('teacher', 'amount_std', 'student_In_Class')
+	form_excluded_columns = ('teacher', 'student_In_Class', 'teachingAssignment')
 	column_list = ('in_class.class_name', 'school_year', 'teacher.user.full_name', 'amount_std')
 
 	def after_model_change(self, form, model, is_created):
@@ -365,7 +364,7 @@ class ClassInfoView(MyBaseView):
 
 class AccountView(MyBaseView):
 	# column_exclude_list = ['password']
-	column_list = ('user.full_name','username', 'password_hash', 'active', 'created_at')
+	column_list = ('user.id','username', 'password_hash', 'active', 'created_at')
 	column_labels = dict(password_hash='Password Hashed', created_at='Ngày tạo')
 	form_columns = ('user','username','password', 'role', 'active')
 	form_extra_fields = {
@@ -492,7 +491,7 @@ class TeachingAssignmentView(MyBaseView):
 
 class StudentInClassView(MyBaseView):
 	def after_model_change(self, form, model, is_created):
-		class_info = self.session.query(ClassInfo).filter_by(id=model.class_info_id)
+		class_info = self.session.query(ClassInfo).filter_by(id=model.class_info_id).first()
 		class_info.amount_std += 1
 		self.session.commit()
 		for teaching_assigment in self.session.query(TeachingAssignment).filter_by(class_info_id = model.class_info_id):
@@ -510,7 +509,7 @@ admin.add_view(AccountView(Account, db.session, category="Quản lý tài khoả
 admin.add_view(MyBaseView(Role, db.session, category="Quản lý tài khoản", name="Thông tin quyền"))
 admin.add_view(MyBaseView(MoreInfo, db.session, name="Danh sách liên hệ", menu_icon_type="ti", menu_icon_value="ti-id-badge"))
 
-admin.add_view(StudentView(Student, db.session, name="Quản lý học sinh",  menu_icon_type="ti", menu_icon_value="ti-user"))
+admin.add_view(StudentView(Student, db.session, name="Quản lý học sinh", url='/admin/list-students', endpoint='admin_list_students', menu_icon_type="ti", menu_icon_value="ti-user"))
 
 admin.add_view(TeacherView(Teacher, db.session, name="Giáo viên", menu_icon_type="ti", menu_icon_value="ti-user"))
 
