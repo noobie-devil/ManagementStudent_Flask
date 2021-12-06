@@ -96,34 +96,13 @@ class ResumeOnlineView(MyBaseEduOfficeView):
         		mimetype='application/json'
 			)
 
-def StudentView_EduOffice(StudentView):
-	def is_accessible(self):
-		return current_user.is_authenticated and current_user.is_edu_office()
 
-	def inaccessible_callback(self, name, **kwargs):
-		flash('Yêu cầu truy cập không khả dụng!! Hãy đăng nhập', category='danger')
-		return redirect(url_for('login_page'))
-
-def StudentInClassView_EduOffice(MyBaseEduOfficeView):
-	def after_model_change(self, form, model, is_created):
-		class_info = self.session.query(ClassInfo).filter_by(id=model.class_info_id).first()
-		class_info.amount_std += 1
-		self.session.commit()
-		for teaching_assigment in self.session.query(TeachingAssignment).filter_by(class_info_id = model.class_info_id):
-			subj = SubjectTranscript()
-			subj.student_id = model.student_id
-			subj.transcript_info_id = teaching_assigment.id
-			self.session.add(subj)
-			self.session.commit()
 
 educational_office = Admin(app, name='Phòng giáo vụ', index_view=MyEducationalOfficeIndexView(url='/edu-office', endpoint='_edu_office', menu_icon_type="ti", menu_icon_value="ti-home"), base_template='master.html', template_mode='bootstrap4', url='/edu-office', endpoint='_edu_office')
 
 educational_office.add_view(ResumeOnlineView(Resume,db.session, name='Hồ sơ nhập học Online', url='/edu-office/online-resume', endpoint='edu_office_resume'))
 
 educational_office.add_view(PersonalInfoView_EduOffice(MoreInfo, db.session, name="Thông tin cá nhân", url='/edu-office/info', endpoint='edu_office_info', menu_icon_type="ti", menu_icon_value="ti-pencil"))
-
-# educational_office.add_view(StudentView_EduOffice(Student, db.session, name="Quản lý học sinh", url='/edu-office/students', endpoint='edu_office_list_students'))
-educational_office.add_view(StudentInClassView_EduOffice(StudentInClass, db.session, name="Phân lớp", url='/edu-office/sub-class', endpoint='edu_office_sub_class'))
 
 educational_office.add_view(ClassInfoView(ClassInfo, db.session, name="Danh sách lớp", url='/edu-office/list-class', endpoint='edu_office_list_class'))
 
