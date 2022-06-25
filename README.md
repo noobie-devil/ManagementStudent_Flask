@@ -16,11 +16,14 @@ This is the final project of the subject of Software Engineering
 
 ## Tech
 
-**Client:** Html, Css3, Bootstrap
-
-**Template:** Customize the interface to suit your needs from [GURU Able - Free Lite Admin Template] - https://github.com/technext/guruable2
-
-**Server:** Flask Framework, AWS Lambda, AWS SQS, AWS EC2
-
-
 **Database:** MySQL
+
+**Frontend:** HTML, CSS3, Bootstrap. Customize the UI to meet project's requirements from [GURU Able - Free Lite Admin Template] - https://github.com/technext/guruable2
+
+**Backend:** Flask Framework
+
+Besides, the project uses a number of open source libraries to work properly:
+
+- [Flask-WTF] - WTForms is a flexible forms validation and rendering library for Python web development!
+
+
