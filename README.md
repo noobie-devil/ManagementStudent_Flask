@@ -45,5 +45,10 @@ Besides, the project uses a number of open source projects to work properly:
 
 ### Class Diagram
 
+![App Screenshot](https://imgur.com/Ww3cmyU.png)
+
+### Database Diagram
+
+
 
 
