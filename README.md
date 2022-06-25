@@ -10,7 +10,7 @@ This is the final project of the subject of Software Engineering
 - [@truongnguyenvan8801](https://github.com/truongnguyenvan8801) - truongnguyenvan8801@gmail.com
 - [@Vinh-san](https://github.com/Vinh-san) - ngvinh0109@gmail.com
 
-**Table of Contents**
+## Contents
 
 - [Features](https://github.com/truongnguyenvan8801/ManagementStudent_Flask/blob/master/README.md#Features)
 - [Tech](https://github.com/truongnguyenvan8801/ManagementStudent_Flask/blob/master/README.md#Tech)
