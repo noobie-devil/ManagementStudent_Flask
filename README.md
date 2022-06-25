@@ -5,6 +5,19 @@
 This is the final project of the subject of Software Engineering
 
 
+## Collaborators
+
+- [@truongnguyenvan8801](https://github.com/truongnguyenvan8801) - truongnguyenvan8801@gmail.com
+- [@Vinh-san](https://github.com/Vinh-san) - ngvinh0109@gmail.com
+
+**Table of Contents**
+
+[TOCM]
+
+[TOC]
+
+##H2 Features
+
 ## Features
 
 - Student Management: CRUD, search for students.
@@ -20,7 +33,7 @@ This is the final project of the subject of Software Engineering
 
 **Frontend:** HTML, CSS3, Bootstrap. Customize the UI to meet project's requirements from [GURU Able - Free Lite Admin Template](https://github.com/technext/guruable2)
 
-**Backend:** using python as the primary programming language. With support from the [<ins>Flask</ins>](https://flask.palletsprojects.com/en/2.1.x/) framework for building web services.
+**Backend:** using Python as the primary programming language. With support from the [<ins>Flask</ins>](https://flask.palletsprojects.com/en/2.1.x/) framework for building web services.
 
 Besides, the project uses a number of open source projects to work properly:
 - [<ins>Flask</ins>](https://flask.palletsprojects.com/en/2.1.x/) -  A micro-framework, Flask lets us build web services with very little overhead
