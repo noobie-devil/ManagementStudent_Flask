@@ -12,11 +12,8 @@ This is the final project of the subject of Software Engineering
 
 **Table of Contents**
 
-[TOCM]
+[Features](https://github.com/truongnguyenvan8801/ManagementStudent_Flask/edit/master/README.md#Features)
 
-[TOC]
-
-##H2 Features
 
 ## Features
 
