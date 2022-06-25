@@ -13,3 +13,14 @@ This is the final project of the subject of Software Engineering
 - Subject Management: CRUD subjects currently being taught in the system.
 - Score Management: CRUD types of score, allow teachers to input score for students with the classes they are currently teaching.
 
+
+## Tech
+
+**Client:** Html, Css3, Bootstrap
+
+**Template:** Customize the interface to suit your needs from [GURU Able - Free Lite Admin Template] - https://github.com/technext/guruable2
+
+**Server:** Flask Framework, AWS Lambda, AWS SQS, AWS EC2
+
+
+**Database:** MySQL
