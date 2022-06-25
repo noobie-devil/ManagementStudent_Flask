@@ -14,6 +14,7 @@ This is the final project of the subject of Software Engineering
 
 - [Features](https://github.com/truongnguyenvan8801/ManagementStudent_Flask/blob/master/README.md#Features)
 - [Tech](https://github.com/truongnguyenvan8801/ManagementStudent_Flask/blob/master/README.md#Tech)
+- [Diagrams](https://github.com/truongnguyenvan8801/ManagementStudent_Flask/blob/master/README.md#Diagrams)
 
 
 ## Features
@@ -48,6 +49,8 @@ Besides, the project uses a number of open source projects to work properly:
 ![App Screenshot](https://imgur.com/Ww3cmyU.png)
 
 ### Database Diagram
+
+![App Screenshot](https://imgur.com/2ok4EEs.png)
 
 
 
