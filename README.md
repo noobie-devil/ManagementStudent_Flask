@@ -18,9 +18,9 @@ This is the final project of the subject of Software Engineering
 
 **Database:** MySQL
 
-**Frontend:** HTML, CSS3, Bootstrap. Customize the UI to meet project's requirements from [GURU Able - Free Lite Admin Template] - https://github.com/technext/guruable2
+**Frontend:** HTML, CSS3, Bootstrap. Customize the UI to meet project's requirements from [GURU Able - Free Lite Admin Template](https://github.com/technext/guruable2)
 
-**Backend:** Flask Framework
+**Backend:** using python as the primary programming language. With support from the [<ins>Flask</ins>](https://flask.palletsprojects.com/en/2.1.x/) framework for building web services.
 
 Besides, the project uses a number of open source projects to work properly:
 - [<ins>Flask</ins>](https://flask.palletsprojects.com/en/2.1.x/) -  A micro-framework, Flask lets us build web services with very little overhead
