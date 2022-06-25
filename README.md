@@ -22,8 +22,13 @@ This is the final project of the subject of Software Engineering
 
 **Backend:** Flask Framework
 
-Besides, the project uses a number of open source libraries to work properly:
-
+Besides, the project uses a number of open source projects to work properly:
+- [<ins>Flask</ins>](https://flask.palletsprojects.com/en/2.1.x/) -  A micro-framework, Flask lets us build web services with very little overhead
 - [<ins>WTForms</ins>](https://wtforms.readthedocs.io/en/3.0.x/) - a flexible forms validation and rendering library for Python web development!
+- [<ins>PyMySQL</ins>](https://pypi.org/project/PyMySQL/#documentation) - This package contains a pure-Python MySQL client library
+- [<ins>Flask-Admin</ins>](https://flask-admin.readthedocs.io/en/latest/) - Solves the boring problem of building an admin interface on top of an existing data model. With little effort, it lets you manage your web service’s data through a user-friendly interface.
+- ...
+
+
 
 
