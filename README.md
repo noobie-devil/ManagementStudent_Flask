@@ -12,7 +12,7 @@ This is the final project of the subject of Software Engineering
 
 **Table of Contents**
 
-[Features](https://github.com/truongnguyenvan8801/ManagementStudent_Flask/edit/master/README.md#Features)
+[Features](https://github.com/truongnguyenvan8801/ManagementStudent_Flask/blob/master/README.md#Features)
 
 
 ## Features
