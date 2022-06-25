@@ -24,6 +24,6 @@ This is the final project of the subject of Software Engineering
 
 Besides, the project uses a number of open source libraries to work properly:
 
-- [<u>WTForms</u>](https://wtforms.readthedocs.io/en/3.0.x/) - a flexible forms validation and rendering library for Python web development!
+- [<ins>WTForms</ins>](https://wtforms.readthedocs.io/en/3.0.x/) - a flexible forms validation and rendering library for Python web development!
 
 
