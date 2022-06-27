@@ -12,9 +12,9 @@ This is the final project of the subject of Software Engineering
 
 ## Contents
 
-- [Features](https://github.com/truongnguyenvan8801/ManagementStudent_Flask/blob/master/README.md#Features)
-- [Tech](https://github.com/truongnguyenvan8801/ManagementStudent_Flask/blob/master/README.md#Tech)
-- [Diagrams](https://github.com/truongnguyenvan8801/ManagementStudent_Flask/blob/master/README.md#Diagrams)
+- [Features](https://github.com/truongnguyenvan8801/ManagementStudent_Flask#Features)
+- [Tech](https://github.com/truongnguyenvan8801/ManagementStudent_Flask#Tech)
+- [Diagrams](https://github.com/truongnguyenvan8801/ManagementStudent_Flask#Diagrams)
 
 
 ## Functions
