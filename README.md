@@ -17,7 +17,7 @@ This is the final project of the subject of Software Engineering
 - [Diagrams](https://github.com/truongnguyenvan8801/ManagementStudent_Flask/blob/master/README.md#Diagrams)
 
 
-## Features
+## Functions
 
 - Student Management: CRUD, search for students.
 - Teacher Management: CRUD, search for teachers.
