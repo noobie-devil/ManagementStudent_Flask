@@ -2,8 +2,7 @@
 
 # Building an educational management website application
 
-This is the final project for the subject of Software Engineering
-
+This is the final project of the Software Technology class
 
 ## Collaborators
 
