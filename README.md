@@ -17,8 +17,8 @@ This is the final project of the Software Technology class
 - [Tech](https://github.com/truongnguyenvan8801/ManagementStudent_Flask#Tech)
 - [Diagrams](https://github.com/truongnguyenvan8801/ManagementStudent_Flask#Diagrams)
 - [Installations](https://github.com/truongnguyenvan8801/ManagementStudent_Flask#Installations)
-  + [Database](https://github.com/truongnguyenvan8801/ManagementStudent_Flask#Installations#Database)
-  + [Project](https://github.com/truongnguyenvan8801/ManagementStudent_Flask#Installations#Project)
+  + [Database](https://github.com/truongnguyenvan8801/ManagementStudent_Flask#Database)
+  + [Project](https://github.com/truongnguyenvan8801/ManagementStudent_Flask#Project)
 - [Testing](https://github.com/truongnguyenvan8801/ManagementStudent_Flask#Testing)
 
 
