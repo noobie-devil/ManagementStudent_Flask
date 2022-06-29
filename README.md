@@ -8,6 +8,8 @@ This is the final project of the Software Technology class
 
 - [@truongnguyenvan8801](https://github.com/truongnguyenvan8801) - truongnguyenvan8801@gmail.com
 - [@Vinh-san](https://github.com/Vinh-san) - ngvinh0109@gmail.com
+- [@quangbdhz](https://github.com/quangbdhz) - tranquangbdhz@gmail.com
+- [@vtv1234](https://github.com/vtv1234) - thanhvinh09032001@gmail.com
 
 ## Contents
 
@@ -141,6 +143,5 @@ Role as a student:
 + Username: STUDENT
 + Password: Group05_Student
 
-## Images
 
 
